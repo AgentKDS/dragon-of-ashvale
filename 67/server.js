@@ -90,7 +90,8 @@ wss.on('connection', ws => {
       p.lastMass = mass; p.lastMassT = t;
       p.st = {
         id: p.id, n: p.name, k: p.skin, a: m.a ? 1 : 0,
-        p: m.p.slice(0, 3).map(v => num(v, -1e5, 1e5)), r: m.r.slice(0, 3).map(v => num(v, -10, 10)),
+        // facing (r[0]) is wrapped to -π..π rather than clamped, so a dragon that has turned many times still faces the right way
+        p: m.p.slice(0, 3).map(v => num(v, -1e5, 1e5)), r: m.r.slice(0, 3).map((v, i) => { v = num(v, -1e6, 1e6); return i === 0 ? Math.atan2(Math.sin(v), Math.cos(v)) : Math.max(-10, Math.min(10, v)); }),
         m: Math.round(mass*10)/10, h: num(m.h, 0, 1e6), b: m.b ? 1 : 0, w: m.w ? 1 : 0, s: num(m.s, -300, 300), rm: num(m.rm, 0, 2),
         // walking details so others see you walk, run, jump, sit and swim
         sw: m.sw ? 1 : 0, sit: num(m.sit, 0, 1), air: num(m.air, 0, 100)
