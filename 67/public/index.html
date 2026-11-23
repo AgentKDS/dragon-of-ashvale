@@ -136,6 +136,52 @@ button.go:active{transform:translateY(2px);box-shadow:0 2px 0 #8f2f13}
 .tbtn.on{background:rgba(229,88,44,.6)}
 body.touch #bars{bottom:auto;top:calc(176px + env(safe-area-inset-top,0px));width:170px}
 #hint,#warn,#feed,#lockName{display:none!important}
+/* bigger title screen */
+#menu .card{max-width:680px;padding:36px clamp(18px,4vw,40px) 30px}
+#menu .card h1{font-size:clamp(56px,11vw,104px);margin-bottom:12px;text-shadow:0 3px 0 rgba(0,0,0,.35),0 0 30px rgba(229,88,44,.35)}
+#menu .card .sub{font-size:clamp(16px,2.2vw,19px);max-width:52ch;margin-left:auto;margin-right:auto}
+#menu button.go{font-size:32px;padding:12px 44px}
+/* tips under the title, in bouncing yellow like a game splash */
+#splash{display:block;margin:-4px auto 18px;background:none;border:none;cursor:pointer;padding:4px 8px;font:400 clamp(18px,3vw,26px)/1.15 var(--display);color:#ffee4a;text-shadow:2px 2px 0 #3f3300,0 0 14px rgba(255,220,60,.35);transform:rotate(-4deg);max-width:100%}
+#splash span{display:inline-block;animation:splashPulse .9s ease-in-out infinite alternate}
+#splash:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+@keyframes splashPulse{from{transform:scale(1)}to{transform:scale(1.07)}}
+@media (prefers-reduced-motion:reduce){#splash span{animation:none}}
+/* Objectives and Controls: two big matching buttons that open */
+.menuTabs{display:grid;gap:12px;margin-top:22px}
+.menuTabs .how{margin:0;text-align:left;border:2px solid rgba(240,185,74,.55);border-radius:10px;background:rgba(241,228,198,.06);overflow:hidden}
+.menuTabs .how[open]{border-color:var(--gold);background:rgba(241,228,198,.09)}
+.menuTabs .how summary{display:flex;align-items:center;gap:12px;list-style:none;margin:0;padding:14px 18px;font:400 26px/1 var(--display);letter-spacing:.02em;text-transform:none;color:var(--parch);cursor:pointer}
+.menuTabs .how summary::-webkit-details-marker{display:none}
+.menuTabs .how summary::after{content:"▸";margin-left:auto;font-size:22px;color:var(--gold);transition:transform .2s}
+.menuTabs .how[open] summary::after{transform:rotate(90deg)}
+.menuTabs .how summary:hover{background:rgba(240,185,74,.12)}
+.sumIcon{display:grid;place-items:center;width:38px;height:38px;border-radius:8px;background:rgba(240,185,74,.18);color:var(--gold);font-size:20px;font-family:var(--ui)}
+.menuTabs .keys{padding:0;margin:0;max-width:none;gap:8px 14px;align-items:start}
+.ctl{padding:2px 18px 20px}
+.ctl h3{font:400 21px var(--display);color:var(--gold);margin:16px 0 8px;padding-bottom:4px;border-bottom:1px solid rgba(240,185,74,.3);text-transform:uppercase;letter-spacing:.04em}
+.ctl h3:first-child{margin-top:4px}
+.ctl .keys kbd{justify-self:start;text-align:center;min-width:64px}
+.ctl .keys span{font-size:15px;line-height:1.35}
+.obj{padding:4px 18px 20px;font-size:15px;line-height:1.45}
+.obj h3{font:400 22px var(--display);color:var(--gold);margin:18px 0 8px}
+.objGoal{background:rgba(229,88,44,.16);border-left:3px solid var(--ember);padding:10px 12px;border-radius:6px}
+.objTable{width:100%;border-collapse:collapse}
+.objTable th{font:700 11px var(--ui);letter-spacing:.1em;text-transform:uppercase;color:var(--parch-dim);text-align:left;padding:4px 8px}
+.objTable td{padding:6px 8px;border-top:1px solid rgba(241,228,198,.12);vertical-align:middle}
+.objTable td:nth-child(2){font-weight:700;color:var(--parch)}
+.objTable td small{display:block;font-weight:500;color:var(--parch-dim);font-size:13px;margin-top:2px}
+.objTable td.pts{font-weight:800;color:var(--gold);white-space:nowrap;font-variant-numeric:tabular-nums}
+.objTable td.rate{color:var(--parch-dim);white-space:nowrap;font-variant-numeric:tabular-nums}
+.objTable td:first-child{width:64px}
+.ico{display:block;width:56px;height:42px}
+img.ico{object-fit:contain;filter:drop-shadow(0 2px 3px rgba(0,0,0,.4))}
+.ico.orb{width:22px;height:22px;margin:10px auto;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff1b0,#ffb03a 45%,#d2541a);box-shadow:0 0 12px #ffa040}
+.ico.gem{width:22px;height:30px;margin:6px auto;background:var(--g);clip-path:polygon(50% 0,100% 35%,50% 100%,0 35%);filter:drop-shadow(0 0 6px var(--g))}
+.objNote{font-size:13px;color:var(--parch-dim);margin:6px 0 0}
+.objList{margin:0;padding-left:20px;display:grid;gap:6px}
+.objList kbd{font:700 11px var(--ui);background:rgba(241,228,198,.12);border:1px solid rgba(241,228,198,.3);border-radius:4px;padding:1px 6px}
+@media (max-width:520px){ .objTable td small{display:none} .ico{width:44px;height:34px} .menuTabs .how summary{font-size:22px} }
 #nameIn{display:block;width:100%;max-width:280px;margin:0 auto 16px;padding:10px 14px;font:700 18px var(--ui);text-align:center;color:var(--parch);background:rgba(241,228,198,.1);border:2px solid rgba(241,228,198,.3);border-radius:8px}
 #nameIn::placeholder{color:var(--parch-dim);opacity:.7}
 #nameIn:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(240,185,74,.35)}
@@ -196,6 +242,7 @@ body.touch #bars{bottom:auto;top:calc(176px + env(safe-area-inset-top,0px));widt
 <div id="menu" class="overlay">
   <div class="card panel">
     <h1>Dragon of <span>Ashvale</span></h1>
+    <button type="button" id="splash" title="Click for another tip"><span id="splashText">Check out the castle! You can go inside!</span></button>
     <p class="sub">Hatch small, eat birds and embers to grow, and defeat rivals to swallow their size. Grab crystals for <b style="color:#56e86f">Growth</b>, <b style="color:#ff6a4a">Power</b> and <b style="color:#46c2ff">Rapid</b> fire. When the giant <b style="color:#ff7a4a">Elder Wyrm</b> rises, every dragon joins the fight.</p>
     <input id="nameIn" type="text" maxlength="16" placeholder="Nickname" aria-label="Your dragon's name" autocomplete="off" spellcheck="false">
     <div class="skinPick">
@@ -204,25 +251,101 @@ body.touch #bars{bottom:auto;top:calc(176px + env(safe-area-inset-top,0px));widt
     </div>
     <button class="go" id="startBtn" type="button">Take flight</button>
     <div id="netStatus" hidden></div>
-    <details class="how">
-      <summary>Controls</summary>
-    <div class="keys">
-      <kbd>Mouse</kbd><span>Steer (click the sky first)</span>
-      <kbd>A D / ← →</kbd><span>Turn</span>
-      <kbd>W S / ↑ ↓</kbd><span>Climb / dive</span>
-      <kbd>Shift</kbd><span>Boost (burns a little of your size)</span>
-      <kbd>Space</kbd><span>Wing beat, a quick climb (take off when walking)</span>
-      <kbd>C</kbd><span>Slow down. Touch the ground to land and walk around</span>
-      <kbd>Space</kbd><span>When landed: jump. Press twice quickly to fly</span>
-      <kbd>X</kbd><span>When landed: sit down or stand up</span>
-      <kbd>F / Click</kbd><span>Breathe fireballs. They home in on the dragon in the ring</span>
-      <kbd>Fly into</kbd><span>Bite a dragon. Bigger dragons bite harder</span>
-      <kbd>M</kbd><span>Sound on / off</span>
-    </div>
-    <div class="prey">
-      <span>Ember <b>+1</b></span><span>Sparrow <b>+1</b></span><span>Pigeon <b>+2</b></span><span>Crow <b>+3</b></span><span>Gull <b>+3</b></span><span>Golden Eagle <b>+10</b></span><span>Villager <b>+2</b></span><span>Knight <b>+4</b></span><span>Defeated dragon <b>its whole size</b></span>
+    <div class="menuTabs">
+    <details class="how" id="objDetails">
+      <summary><span class="sumIcon" aria-hidden="true">★</span>Objectives</summary>
+      <div class="obj">
+        <div class="objGoal"><b>Your goal:</b> hatch as a tiny dragon, eat and fight your way up, and become <b>#1 on the leaderboard</b>, the biggest dragon in the valley. Your <b>size</b> is your score.</div>
+        <h3>Eat birds</h3>
+        <table class="objTable">
+          <thead><tr><th></th><th>Bird</th><th>Size</th><th>Spawn rate</th></tr></thead>
+          <tbody id="birdRows"></tbody>
+        </table>
+        <p class="objNote">Spawn rate = how many of the birds in the sky are that kind. The Golden Eagle also heals a quarter of your health.</p>
+        <h3>Eat people</h3>
+        <table class="objTable">
+          <thead><tr><th></th><th>Who</th><th>Size</th><th>Spawn rate</th></tr></thead>
+          <tbody>
+            <tr><td><svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="10" r="5" fill="#f1c9a5"/><path d="M13 8 L20 2 L27 8Z" fill="#6b4a2a"/><rect x="13" y="16" width="14" height="13" rx="2" fill="#3f6a8a"/><rect x="14" y="29" width="5" height="9" fill="#4a3a2a"/><rect x="21" y="29" width="5" height="9" fill="#4a3a2a"/></svg></td><td>Villager<small>Run away when you get close. Chase one too long and they hide in their house</small></td><td class="pts">+4</td><td class="rate">87%</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="10" r="5" fill="#e0ac82"/><path d="M14 9 L20 2 L26 9Z" fill="#c4cad2"/><rect x="13" y="16" width="14" height="13" rx="2" fill="#8a1f1a"/><rect x="14" y="29" width="5" height="9" fill="#a7aeb8"/><rect x="21" y="29" width="5" height="9" fill="#a7aeb8"/><rect x="29" y="8" width="2" height="24" fill="#a7aeb8"/></svg></td><td>Castle knight<small>Guards the castle courtyard</small></td><td class="pts">+6</td><td class="rate">13%</td></tr>
+            <tr><td><svg class="ico" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="12" r="5" fill="#f0c8a0"/><path d="M14 7 L16 2 L18 6 L20 1 L22 6 L24 2 L26 7Z" fill="#f2c24a"/><path d="M11 38 L14 18 L26 18 L29 38Z" fill="#9a1a2a"/><rect x="13" y="17" width="14" height="3" rx="1.5" fill="#f4f0e8"/></svg></td><td>The King<small>Sits on his throne inside the castle. Worth as much as a Golden Eagle</small></td><td class="pts">+10</td><td class="rate">Only 1</td></tr>
+          </tbody>
+        </table>
+        <h3>Grab things</h3>
+        <table class="objTable">
+          <tbody>
+            <tr><td><span class="ico orb" aria-hidden="true"></span></td><td>Embers<small>Glowing orbs floating everywhere, and dropped by boosting and defeated dragons</small></td><td class="pts">+1 or more</td><td class="rate">Everywhere</td></tr>
+            <tr><td><span class="ico gem" style="--g:#56e86f" aria-hidden="true"></span></td><td>Growth crystal<small>Everything you eat counts double for 20 seconds</small></td><td class="pts">×2 growth</td><td class="rate">Rare</td></tr>
+            <tr><td><span class="ico gem" style="--g:#ff6a4a" aria-hidden="true"></span></td><td>Power crystal<small>Your fireballs hit twice as hard for 20 seconds</small></td><td class="pts">×2 damage</td><td class="rate">Rare</td></tr>
+            <tr><td><span class="ico gem" style="--g:#46c2ff" aria-hidden="true"></span></td><td>Rapid crystal<small>Breathe fire three times as fast for 20 seconds</small></td><td class="pts">×3 fire rate</td><td class="rate">Rare</td></tr>
+          </tbody>
+        </table>
+        <h3>Fight</h3>
+        <ul class="objList">
+          <li><b>Defeat another dragon</b> and you swallow <b>its whole size</b>. Bigger dragons have more health and bite harder, so pick your fights.</li>
+          <li><b>Cut them off:</b> boosting leaves a burning trail in the air. Any dragon that flies through it gets badly burned.</li>
+          <li><b>Boosting costs size</b> and drops embers behind you, so use it when it counts.</li>
+          <li><b>The Elder Wyrm</b> appears every couple of minutes with <b>10,000 health</b>, and every dragon fights it. When it falls, everyone gets size for the damage they did, and the final blow earns a big bonus.</li>
+        </ul>
+        <h3>Explore</h3>
+        <ul class="objList">
+          <li>Slow down (<kbd>C</kbd>) and touch the ground to <b>land and walk</b>. Swim in the lake, sit with <kbd>X</kbd>, and fly off again by pressing <kbd>Space</kbd> twice.</li>
+          <li>Walk up to the castle and the <b>gate opens</b>. See what's inside.</li>
+        </ul>
+      </div>
+    </details>
+    <details class="how" id="ctlDetails">
+      <summary><span class="sumIcon" aria-hidden="true">⌨</span>Controls</summary>
+    <div class="ctl">
+      <h3>While flying</h3>
+      <div class="keys">
+        <kbd>Mouse</kbd><span>Steer: left and right to turn, up and down to climb and dive. Click the game once first so it can use your mouse</span>
+        <kbd>A / ←</kbd><span>Turn left</span>
+        <kbd>D / →</kbd><span>Turn right</span>
+        <kbd>W / ↑</kbd><span>Climb</span>
+        <kbd>S / ↓</kbd><span>Dive</span>
+        <kbd>Shift</kbd><span>Boost: fly twice as fast. Burns a little of your size, drops embers, and leaves a burning trail that hurts other dragons</span>
+        <kbd>Space</kbd><span>Wing beat: a quick jump upward</span>
+        <kbd>C</kbd><span>Slow down (hold it)</span>
+        <kbd>C + ground</kbd><span>Land: slow down and touch the ground to land and start walking</span>
+        <kbd>F / Left click</kbd><span>Breathe fireballs. They home in on the dragon inside the target ring</span>
+        <kbd>Fly into</kbd><span>Bite a dragon. Bigger dragons bite harder</span>
+        <kbd>Fly into</kbd><span>Eat birds, embers and crystals by flying through them with your mouth</span>
+        <kbd>Swoop low</kbd><span>Snatch villagers and knights off the ground</span>
+      </div>
+      <h3>While walking</h3>
+      <div class="keys">
+        <kbd>W / ↑</kbd><span>Walk forward</span>
+        <kbd>S / ↓</kbd><span>Walk backward</span>
+        <kbd>A / ←</kbd><span>Turn left</span>
+        <kbd>D / →</kbd><span>Turn right</span>
+        <kbd>Mouse</kbd><span>Turn left and right</span>
+        <kbd>Shift</kbd><span>Run</span>
+        <kbd>Space</kbd><span>Jump</span>
+        <kbd>Space Space</kbd><span>Press twice quickly to spread your wings and take off (only outdoors)</span>
+        <kbd>X</kbd><span>Sit down or stand back up</span>
+        <kbd>F / Left click</kbd><span>Breathe fireballs</span>
+        <kbd>Walk into</kbd><span>Eat villagers, knights and anything else in front of your mouth</span>
+        <kbd>Deep water</kbd><span>Walk into the lake to swim. Walk out the other side to climb back onto land</span>
+        <kbd>Castle gate</kbd><span>Walk up to the castle and the gate opens for you</span>
+      </div>
+      <h3>Anytime</h3>
+      <div class="keys">
+        <kbd>M</kbd><span>Sound on / off</span>
+        <kbd>Esc</kbd><span>Free your mouse pointer (click the game again to steer)</span>
+        <kbd>Enter</kbd><span>Start the game from this screen, or fly again after you fall</span>
+      </div>
+      <h3>On a phone or tablet</h3>
+      <div class="keys">
+        <kbd>Left thumb</kbd><span>Drag anywhere on the left half of the screen to steer (or walk)</span>
+        <kbd>Boost</kbd><span>Hold to boost (or run while walking)</span>
+        <kbd>Flap</kbd><span>Wing beat (or jump while walking; tap twice to take off)</span>
+        <kbd>Fire</kbd><span>Hold to breathe fireballs</span>
+        <kbd>Land</kbd><span>Hold to slow down, then touch the ground to land</span>
+      </div>
     </div>
     </details>
+    </div>
   </div>
 </div>
 <div id="over" class="overlay" hidden>
@@ -680,11 +803,51 @@ const statue = {mouth:null, t:0, R:null};
     }
     win(0, 32, S + 9.3, 0, true);
     // drawbridge across the moat
-    add(new THREE.BoxGeometry(14, 1.4, MOAT_OUT - S + 4), woodM, 0, 0.2, (S + 8 + MOAT_OUT + 4)/2);
-    for (let k=S + 12; k<MOAT_OUT + 4; k+=3) add(new THREE.BoxGeometry(14.4, 0.3, 0.4), darkM, 0, 0.95, k);
-    for (const sx of [-1,1]) add(new THREE.CylinderGeometry(0.25, 0.25, MOAT_OUT - S - 4, 6), ironM, sx*6.8, 12, (S + 10 + MOAT_OUT)/2).rotation.x = 0.35;
+    {
+      const B0 = S + 9, B1 = MOAT_OUT + 6, BW = 8;                 // bridge runs from the gate (z=B0) out over the moat (z=B1), half-width BW
+      const plankA = new THREE.MeshLambertMaterial({color:0x7a5534, flatShading:true});
+      const plankB = new THREE.MeshLambertMaterial({color:0x5e4026, flatShading:true});
+      const beamM = new THREE.MeshLambertMaterial({color:0x3e2a1a, flatShading:true});
+      // planks laid across, two tones of oak, each sitting a hair higher or lower
+      let pi = 0;
+      for (let z = B0 + 0.8; z < B1; z += 1.6, pi++) add(new THREE.BoxGeometry(BW*2 - 0.6, 0.7, 1.45), pi % 2 ? plankA : plankB, 0, 0.55 + (pi % 3)*0.04, z);
+      // heavy side beams with iron studs, and iron straps across the deck
+      for (const sx of [-1,1]){
+        add(new THREE.BoxGeometry(1.4, 2, B1 - B0), beamM, sx*(BW - 0.3), 0.4, (B0 + B1)/2);
+        for (let z = B0 + 2; z < B1; z += 3) add(new THREE.SphereGeometry(0.22, 6, 4), ironM, sx*(BW + 0.42), 0.9, z);
+      }
+      for (let z = B0 + 6; z < B1; z += 9) add(new THREE.BoxGeometry(BW*2 - 0.4, 0.12, 0.6), ironM, 0, 0.95, z);
+      // railing: posts with a rope rail on top
+      for (const sx of [-1,1]){
+        for (let z = B0 + 3; z <= B1 - 1; z += 6) add(new THREE.BoxGeometry(0.6, 4, 0.6), beamM, sx*(BW - 0.3), 3, z);
+        add(new THREE.CylinderGeometry(0.16, 0.16, B1 - B0 - 3, 6), new THREE.MeshLambertMaterial({color:0xb89a6a}), sx*(BW - 0.3), 4.6, (B0 + 3 + B1 - 1)/2).rotation.x = Math.PI/2;
+      }
+      // great iron chains from the gatehouse down to the far end of the bridge
+      const linkG = new THREE.TorusGeometry(0.55, 0.16, 5, 10);
+      for (const sx of [-1,1]){
+        const ax = sx*(BW - 0.6), ay = GH + 4, az = S + 9.6, bx = sx*(BW - 0.3), by = 1.6, bz = B0 + 26;
+        const n = 30;
+        for (let k = 0; k <= n; k++){
+          const t = k/n, sag = Math.sin(t*Math.PI)*2.2;
+          const l = add(linkG, ironM, ax + (bx - ax)*t, ay + (by - ay)*t - sag, az + (bz - az)*t);
+          l.rotation.set(Math.atan2(by - ay, bz - az) + Math.PI/2, k % 2 ? Math.PI/2 : 0, 0);
+        }
+        // the winch wheels the chains wind onto, set into the gatehouse wall
+        const wheel = add(new THREE.TorusGeometry(1.6, 0.35, 6, 14), ironM, ax, ay, az + 0.2);
+        add(new THREE.CylinderGeometry(0.4, 0.4, 0.8, 8), ironM, ax, ay, az + 0.2).rotation.x = Math.PI/2;
+        // anchor plates where the chains meet the deck
+        add(new THREE.BoxGeometry(1.4, 0.4, 1.4), ironM, bx, 1.2, bz);
+      }
+      // stone posts with lanterns where the bridge meets the far bank
+      for (const sx of [-1,1]){
+        add(new THREE.BoxGeometry(3, 7, 3), baseM, sx*(BW + 2), 3.5, B1 - 1);
+        add(new THREE.BoxGeometry(3.6, 0.8, 3.6), stoneM, sx*(BW + 2), 7.2, B1 - 1);
+        add(new THREE.BoxGeometry(1.4, 1.8, 1.4), new THREE.MeshBasicMaterial({color:0xffd27a}), sx*(BW + 2), 8.6, B1 - 1);
+        add(new THREE.ConeGeometry(1.3, 1.2, 4), ironM, sx*(BW + 2), 10, B1 - 1).rotation.y = Math.PI/4;
+      }
+    }
     // ---------- the keep: a throne room you can walk into, solid stone above it ----------
-    const KX = 23, KZ0 = -33, KZ1 = 5, KH = 22, KT = 3, DW = 6;
+    const KX = 23, KZ0 = -33, KZ1 = 5, KH = 22, KT = 3, DW = 9.5, DH = 20;   // a big doorway into the throne room
     add(new THREE.BoxGeometry(46, 10, 38), baseM, 0, -5, -14);
     add(new THREE.BoxGeometry(46, 56 - KH, 38), stoneM, 0, KH + (56 - KH)/2, -14);
     add(new THREE.BoxGeometry(46, KH, KT), stoneM, 0, KH/2, KZ0 + KT/2);
@@ -692,7 +855,16 @@ const statue = {mouth:null, t:0, R:null};
       add(new THREE.BoxGeometry(KT, KH, 38), stoneM, sx*(KX - KT/2), KH/2, -14);
       add(new THREE.BoxGeometry(KX - DW, KH, KT), stoneM, sx*(DW + (KX - DW)/2), KH/2, KZ1 - KT/2);
     }
-    add(new THREE.BoxGeometry(DW*2, KH - 16, KT), stoneM, 0, 16 + (KH - 16)/2, KZ1 - KT/2);
+    add(new THREE.BoxGeometry(DW*2, KH - DH, KT), stoneM, 0, DH + (KH - DH)/2, KZ1 - KT/2);
+    // a grand frame around the doorway: carved posts, a golden lintel, a crest and two torches
+    for (const sx of [-1,1]){
+      add(new THREE.BoxGeometry(2, DH + 1, 1.4), baseM, sx*(DW + 0.6), (DH + 1)/2, KZ1 + 0.4);
+      add(new THREE.BoxGeometry(2.6, 1.2, 1.8), baseM, sx*(DW + 0.6), 0.6, KZ1 + 0.5);
+      add(new THREE.BoxGeometry(0.6, 0.6, 1.4), ironM, sx*(DW + 2.2), 12, KZ1 + 0.9);
+      braziers.push(add(new THREE.ConeGeometry(0.6, 1.8, 7), fireM, sx*(DW + 2.2), 13.4, KZ1 + 1.4));
+    }
+    add(new THREE.BoxGeometry(DW*2 + 4.4, 1.6, 1.6), goldM, 0, DH + 0.8, KZ1 + 0.5);
+    add(new THREE.BoxGeometry(2.6, 2.6, 0.4), goldM, 0, DH + 0.8, KZ1 + 1.4).rotation.z = Math.PI/4;
     const kw = (minX, maxX, minZ, maxZ) => solids.push({t:'b', minX:c.x + minX, maxX:c.x + maxX, minZ:c.z + minZ, maxZ:c.z + maxZ, top:c.h + 62});
     kw(-KX, KX, KZ0, KZ0 + KT); kw(-KX, -KX + KT, KZ0, KZ1); kw(KX - KT, KX, KZ0, KZ1);
     kw(-KX, -DW, KZ1 - KT, KZ1); kw(DW, KX, KZ1 - KT, KZ1);
@@ -793,6 +965,11 @@ const statue = {mouth:null, t:0, R:null};
       for (const sx of [-1,1]) for (let tz=-36; tz<=42; tz+=12) torchAt(sx*HWX, tz, sx < 0 ? Math.PI/2 : -Math.PI/2, false);
       const secretTorch = torchAt(-HWX, -42, Math.PI/2, true);
       secretTorch.position.y = 11;
+      // the loose torch burns brighter than the rest: a tall golden flame, a glow around it, and its own light
+      const tFlame = add(new THREE.ConeGeometry(0.85, 2.8, 8), new THREE.MeshBasicMaterial({color:0xffe68a}), 0, 3.1, 1.2, secretTorch);
+      braziers.push(tFlame);
+      const tHalo = add(new THREE.SphereGeometry(2.4, 14, 10), new THREE.MeshBasicMaterial({color:0xffc24a, transparent:true, opacity:0.3, depthWrite:false, blending:THREE.AdditiveBlending}), 0, 2.9, 1.2, secretTorch);
+      const tLight = new THREE.PointLight(0xffb44a, 2.4, 48, 2); tLight.position.set(0, 3.2, 2); secretTorch.add(tLight);
       // suits of armour standing guard along the walls
       const armourM = new THREE.MeshLambertMaterial({color:0xaab2bc, flatShading:true});
       for (const sx of [-1,1]) for (const az of [-24, 0, 24]){
@@ -845,10 +1022,19 @@ const statue = {mouth:null, t:0, R:null};
       ha(new THREE.BoxGeometry(9, 0.35, 20), carpetM, 0, 1.42, -39);
       ha(new THREE.BoxGeometry(9, 0.35, 15.5), carpetM, 0, 2.72, -41.5);
       ha(new THREE.BoxGeometry(9, 0.35, 11.5), carpetM, 0, 4.02, -43.5);
-      // a towering banner and golden crest behind the throne
-      ha(new THREE.PlaneGeometry(16, 30), bannerM, 0, 22, -HZD + 0.06);
-      ha(new THREE.BoxGeometry(5, 5, 0.3), goldM, 0, 26, -HZD + 0.2).rotation.z = Math.PI/4;
-      ha(new THREE.TorusGeometry(4, 0.4, 6, 20), goldM, 0, 26, -HZD + 0.3);
+      // a secret doorway in the back wall, hidden behind the great banner: dark steps leading down
+      const door = new THREE.Group(); door.position.set(0, 3.9, -HZD + 0.04); hall.add(door);
+      add(new THREE.PlaneGeometry(14, 21), new THREE.MeshBasicMaterial({color:0x060403}), 0, 10.5, 0, door);
+      for (let k=0;k<6;k++) add(new THREE.BoxGeometry(13 - k*0.9, 0.5, 0.05), new THREE.MeshBasicMaterial({color:[0x3a332c,0x2e2823,0x241f1b,0x1a1613,0x120f0d,0x0b0908][k]}), 0, 1 + k*1.6, 0.02, door);
+      add(new THREE.TorusGeometry(7, 0.7, 6, 18, Math.PI), hDark, 0, 21, 0.1, door);
+      for (const sx of [-1,1]) add(new THREE.BoxGeometry(1.4, 21, 0.8), hDark, sx*7.4, 10.5, 0.1, door);
+      // the towering banner and golden crest that cover it (the banner rolls up when the secret opens)
+      const BAN_TOP = 37.9, BAN_H = 34;
+      const backBanner = ha(new THREE.PlaneGeometry(16, BAN_H), bannerM, 0, BAN_TOP - BAN_H/2, -HZD + 0.6);
+      const banRoll = ha(new THREE.CylinderGeometry(0.7, 0.7, 16.8, 12), new THREE.MeshLambertMaterial({color:0x5a1a24}), 0, BAN_TOP, -HZD + 1.2); banRoll.rotation.z = Math.PI/2;
+      ha(new THREE.BoxGeometry(17.4, 0.6, 0.6), goldM, 0, BAN_TOP + 0.6, -HZD + 0.9);
+      const crestA = ha(new THREE.BoxGeometry(5, 5, 0.3), goldM, 0, 26, -HZD + 0.75); crestA.rotation.z = Math.PI/4;
+      const crestB = ha(new THREE.TorusGeometry(4, 0.4, 6, 20), goldM, 0, 26, -HZD + 0.85);
       // the throne
       const throne = new THREE.Group(); throne.position.set(0, 3.9, -44); throne.scale.setScalar(1.6); hall.add(throne);
       add(new THREE.BoxGeometry(4.6, 1.4, 3.8), goldM, 0, 0.7, 0, throne);
@@ -873,7 +1059,13 @@ const statue = {mouth:null, t:0, R:null};
         entry:new THREE.Vector3(c.x, c.h + HY, c.z - 14 + HZD - 7), exitZ:c.z - 14 + HZD - 2.2,
         tiers:tiers.map(t => ({minX:c.x - t.hx, maxX:c.x + t.hx, minZ:c.z - 14 + t.z0, maxZ:c.z - 14 + t.z1, top:t.top})),
         circles, boxes};
-      SECRET = {torch:secretTorch, throne, hole, open:false, s:0, closeT:0, slide:12,
+      // a little golden sparkle that slips out of the king when he's eaten, follows you, and keeps darting to the loose torch
+      const wisp = new THREE.Group(); wisp.visible = false; scene.add(wisp);
+      add(new THREE.SphereGeometry(0.45, 10, 8), new THREE.MeshBasicMaterial({color:0xfff6c8}), 0, 0, 0, wisp);
+      add(new THREE.SphereGeometry(1.3, 12, 8), new THREE.MeshBasicMaterial({color:0xffc24a, transparent:true, opacity:0.35, depthWrite:false, blending:THREE.AdditiveBlending}), 0, 0, 0, wisp);
+      SECRET = {torch:secretTorch, throne, hole, open:false, s:0, closeT:0, slide:15,
+        flame:tFlame, halo:tHalo, light:tLight, banner:backBanner, roll:banRoll, crest:[crestA, crestB], banTop:BAN_TOP, banH:BAN_H,
+        wisp, wispOn:false, wispPos:new THREE.Vector3(),
         torchWorld:new THREE.Vector3(c.x - HWX + 1.2, c.h + HY, c.z - 14 - 42), holeWorld:new THREE.Vector3(c.x, c.h + HY, c.z - 14 - 44)};
       // the king, seated on his throne until a dragon walks in
       const kg = new THREE.Group(); scene.add(kg);
@@ -1121,7 +1313,7 @@ const statue = {mouth:null, t:0, R:null};
       DUN = {y:c.h + DY, cx:c.x, cz:c.z + dz0, hx:HX - 1.5, hz:HZ - 1.5,
         entry:new THREE.Vector3(c.x - 55, c.h + DY, c.z + dz0), exitX:c.x - 62.5, camMinX:c.x - 61,
         treasure:new THREE.Vector3(c.x, c.h + DY, c.z + dz0), ready:true, cool:0, gems:vgems, egg, glow:vglow,
-        progress:0, gained:0, found:false, channeling:false, spawnT:1, coinT:0, CH_TIME:45, PRIZE:450, BONUS:260,
+        progress:0, gained:0, found:false, channeling:false, spawnT:1, coinT:0, CH_TIME:30, PRIZE:450, BONUS:260, step:0, offT:0,
         mound:{r:MR, h:MH}, treasureR:15,
         circles, boxes};
     }
@@ -1166,10 +1358,7 @@ const statue = {mouth:null, t:0, R:null};
       slabs.push(Object.assign(W(x, 0.12, z), {sx:2.45, sy:0.3, sz:2.45, col:0x6f695f + Math.floor(Math.random()*3)*0x080808}));
     }
     instanced(new THREE.BoxGeometry(1,1,1), new THREE.MeshLambertMaterial({flatShading:true}), slabs);
-    // the open archway into the throne room
-    add(new THREE.TorusGeometry(6.8, 0.9, 6, 16, Math.PI), baseM, 0, 16, 5.5);
-    for (const sx of [-1,1]) add(new THREE.BoxGeometry(1.4, 16, 1.2), baseM, sx*6.8, 8, 5.5);
-    add(new THREE.BoxGeometry(2.6, 2.6, 0.5), goldM, 0, 19.5, 5.6).rotation.z = Math.PI/4;
+    // (the throne room doorway's frame is built with the keep, sized to the big door)
     // fountain crowned by a stone dragon that breathes fire every few seconds
     {
       const fz = 46;
@@ -1410,11 +1599,11 @@ const dragon = DR.group;
 
 // ---------- birds ----------
 const BIRD_TYPES = [
-  {name:'Sparrow', body:0x8a6a4a, wing:0x5e4630, belly:0xd8c3a0, size:2.1, speed:20, pts:1, food:4, count:46, home:'village'},
-  {name:'Pigeon', body:0x8e96a6, wing:0x6a7180, belly:0xb7bcc7, size:2.6, speed:24, pts:2, food:6, count:30, home:'village'},
-  {name:'Crow', body:0x2a2a30, wing:0x18181c, belly:0x3a3a42, size:2.9, speed:28, pts:3, food:7, count:20, home:'castle'},
-  {name:'Gull', body:0xf3f3ee, wing:0xaab0ba, belly:0xffffff, size:3.3, speed:32, pts:3, food:8, count:20, home:'lake'},
-  {name:'Golden Eagle', body:0xc98a2b, wing:0x8a5a1e, belly:0xe9c46a, size:4.6, speed:40, pts:10, food:20, heal:25, count:6, home:'castle', glow:0x6a3d00},
+  {name:'Sparrow', body:0x8a6a4a, wing:0x5e4630, belly:0xd8c3a0, size:2.1, speed:14, pts:1, food:4, count:110, home:'village'},
+  {name:'Pigeon', body:0x8e96a6, wing:0x6a7180, belly:0xb7bcc7, size:2.6, speed:17, pts:2, food:6, count:70, home:'village'},
+  {name:'Crow', body:0x2a2a30, wing:0x18181c, belly:0x3a3a42, size:2.9, speed:20, pts:3, food:7, count:45, home:'castle'},
+  {name:'Gull', body:0xf3f3ee, wing:0xaab0ba, belly:0xffffff, size:3.3, speed:22, pts:3, food:8, count:45, home:'lake'},
+  {name:'Golden Eagle', body:0xc98a2b, wing:0x8a5a1e, belly:0xe9c46a, size:4.6, speed:28, pts:10, food:20, heal:25, count:14, home:'castle', glow:0x6a3d00},
 ];
 const birds = [];
 // Each species is built from simple shapes, then merged into one vertex-coloured mesh for the body and one per wing,
@@ -2131,7 +2320,9 @@ function tryEat(e){
   for (const b of birds){
     if (!b.alive) continue;
     const d = b.pos.distanceTo(e.mouth); if (d < nearest) nearest = d;
-    if (d < r0 + b.T.size*0.7) eatBird(e, b, false);
+    // birds are easy to catch: a wide bite, and the player's jaws pull in any bird that comes close
+    if (d < r0 + b.T.size*1.3 + 2) eatBird(e, b, false);
+    else if (e.isPlayer && d < r0 + b.T.size*1.3 + 16) b.pos.lerp(e.mouth, 0.12);
   }
   for (const o of orbs){
     if (!o.alive) continue;
@@ -2718,9 +2909,9 @@ function resetGame(){
   D.mass = START_MASS; D.scale = scaleFor(START_MASS); D.hp = maxHpFor(START_MASS);
   if (D.walking) takeOff();
   D.inDungeon = false; D.inHall = false;
-  if (SECRET){ SECRET.open = false; SECRET.s = 0; }
+  if (SECRET){ SECRET.open = false; SECRET.s = 0; SECRET.wispOn = false; SECRET.wisp.visible = false; }
   if (KING){ KING.gone = false; KING.state = 'sit'; }
-  if (DUN){ DUN.ready = true; DUN.cool = 0; DUN.progress = 0; DUN.gained = 0; DUN.found = false; DUN.channeling = false; }
+  if (DUN){ DUN.ready = true; DUN.cool = 0; DUN.progress = 0; DUN.gained = 0; DUN.found = false; DUN.channeling = false; DUN.step = 0; DUN.warnedKnights = false; }
   guards.forEach(k => { k.alive = false; k.g.visible = false; });
   D.alive = true; D.R.group.visible = true; D.kills = 0; D.birds = 0; D.lastHurt = -99; D.peak = 0;
   D.pw.grow = D.pw.power = D.pw.rapid = 0;
@@ -2738,7 +2929,10 @@ addEventListener('keydown', e => {
   keys[e.code] = true;
   if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault();
   if (e.code === 'KeyM'){ muted = !muted; if (windGain) windGain.gain.value = 0; }
-  if (e.code === 'Enter' && state !== 'play'){ startGame(); }
+  if (e.code === 'Enter' && !e.repeat){
+    if (state === 'play') quitToMenu();
+    else startGame();
+  }
 });
 addEventListener('keyup', e => { keys[e.code] = false; });
 addEventListener('blur', () => { for (const k in keys) keys[k] = false; mouseFire = false; });
@@ -2784,6 +2978,27 @@ function startGame(){
 $('startBtn').addEventListener('click', startGame);
 $('againBtn').addEventListener('click', startGame);
 
+// Enter during a game: your dragon dies on the spot and you go straight back to the title screen
+function quitToMenu(){
+  if (D.alive){
+    netSend({t:'dead', by:0, m:+D.mass.toFixed(1)});
+    burst(D.pos, D.pal.scale, D.pal.belly, 50); burst(D.pos, 0xff8a2a, 0xffd23c, 25);
+  }
+  if (D.walking) takeOff();
+  D.inDungeon = false; D.inHall = false;
+  state = 'menu';
+  // behind the title screen a fresh hatchling circles the valley, like when the page first loads
+  D.alive = true; D.R.group.visible = true;
+  D.pos.set(0, 110, -380); D.yaw = 0; D.pitch = 0; D.roll = 0; D.speed = 48; D.vy = 0;
+  D.mass = START_MASS; D.scale = scaleFor(START_MASS); D.hp = maxHpFor(START_MASS);
+  camPos.set(0, 130, -420);
+  lockTarget = null;
+  if (document.pointerLockElement) try { document.exitPointerLock(); } catch(e){}
+  mouseFire = false; for (const k in keys) keys[k] = false;
+  if (windGain) windGain.gain.value = 0;
+  $('hud').hidden = true; $('touch').hidden = true; $('over').hidden = true; $('menu').hidden = false;
+  showTip();
+}
 function gameOver(why){
   state = 'over';
   if (document.pointerLockElement) try { document.exitPointerLock(); } catch(e){}
@@ -2948,7 +3163,7 @@ function enterDungeon(){
     // arrive clear of the exit spot, which is further out for a bigger dragon
     D.pos.set(Math.max(DUN.entry.x, DUN.exitX + 2.2*D.scale + 9), DUN.y + WALK_LIFT*D.scale, DUN.entry.z);
     camPos.set(DUN.camMinX, D.pos.y + 9, D.pos.z);
-    banner('The Dungeon of Emberhold');
+    banner('The Dungeon of Emberhold. Something glitters in the middle of the vault…', true);
     if (actx && !muted){ const t = actx.currentTime; tone(t, 110, 55, 1.2, 0.12, 'sawtooth'); }
   });
 }
@@ -2965,23 +3180,55 @@ function updateInterior(dt){
   const S = SECRET, playerIn = state === 'play' && D.alive && inKeepRoom(D.pos);
   // walking (or flying low) through the keep's doorway leads into the great hall; its doors lead back out
   if (state === 'play' && D.alive && !transit && !D.inHall && !D.inDungeon &&
-      Math.abs(D.pos.x - KEEPDOOR.x) < 6 && Math.abs(D.pos.z - KEEPDOOR.z) < 3.5 && D.pos.y < KEEPDOOR.y + 17) enterHall();
+      Math.abs(D.pos.x - KEEPDOOR.x) < 9 && Math.abs(D.pos.z - KEEPDOOR.z) < 3.5 && D.pos.y < KEEPDOOR.y + 20) enterHall();
   if (playerIn && !transit && D.pos.z > HALL.cz + HALL.hz - 2.2*D.scale - 2.5 && Math.abs(D.pos.x - HALL.cx) < 7) exitHall();
   // the loose torch beside the throne
   const torchD = Math.hypot(D.pos.x - S.torchWorld.x, D.pos.z - S.torchWorld.z);
   // the loose torch hangs high on the wall: you have to jump up at it
-  if (playerIn && !S.open && Math.random() < dt*1.5) burst(tv.set(S.torchWorld.x + 0.3, HALL.y + 13, S.torchWorld.z), 0xffe08a, 0xffffff, 2);
+  // it glitters and throws off sparks all the time
+  const tw = Math.sin(now*9) * 0.5 + Math.sin(now*23) * 0.25;
+  S.halo.scale.setScalar(1 + tw*0.18); S.halo.material.opacity = S.open ? 0.12 : 0.28 + tw*0.08;
+  S.light.intensity = (S.open ? 1.2 : 2.4) + tw*0.6;
+  if (playerIn && Math.random() < dt*(S.open ? 2 : 12)){
+    tv.set(S.torchWorld.x + 0.8 + Math.random()*1.5, HALL.y + 13.5 + Math.random()*2, S.torchWorld.z + (Math.random() - 0.5)*2.5);
+    burst(tv, Math.random() < 0.5 ? 0xffe08a : 0xfff6d0, 0xffffff, 1);
+  }
+  // the sparkle from the king: follows you around, and every few seconds darts over to the loose torch to show you
+  if (S.wispOn && !S.open){
+    tv.set(S.torchWorld.x + 2, HALL.y + 14, S.torchWorld.z);
+    const dart = (now*0.35) % 1 > 0.62 && D.inHall;
+    if (dart) kingTmp.copy(tv);
+    else {
+      kingTmp.subVectors(tv, D.pos).setY(0); const l = kingTmp.length() || 1;
+      kingTmp.multiplyScalar((5 + 3*D.scale)/l).add(D.pos); kingTmp.y = D.pos.y + 4*D.scale + 3 + Math.sin(now*3)*1.2;
+    }
+    S.wispPos.lerp(kingTmp, 1 - Math.exp(-dt*(dart ? 2.2 : 3.5)));
+    S.wisp.position.copy(S.wispPos); S.wisp.visible = D.inHall;
+    S.wisp.children[1].scale.setScalar(1 + Math.sin(now*11)*0.25);
+    if (D.inHall && Math.random() < dt*25) burst(S.wispPos, 0xffe08a, 0xffffff, 1);
+  } else if (S.wisp.visible){
+    // its job is done: it flies into the torch and vanishes
+    tv.set(S.torchWorld.x + 1, HALL.y + 14, S.torchWorld.z);
+    S.wispPos.lerp(tv, 1 - Math.exp(-dt*4)); S.wisp.position.copy(S.wispPos);
+    if (S.wispPos.distanceTo(tv) < 1.2 || !D.inHall){ S.wisp.visible = false; S.wispOn = false; if (D.inHall) burst(tv, 0xffe08a, 0xffffff, 24); }
+  }
   if (playerIn && !S.open && torchD < 5 + 2.2*D.scale && D.walking && D.air > 2.5){
     S.open = true; S.closeT = 0;
-    banner('A secret passage opens beneath the throne!');
+    banner('A secret passage opens behind the throne!');
+    burst(tv.set(S.torchWorld.x + 1.5, HALL.y + 14, S.torchWorld.z), 0xffe08a, 0xffffff, 30);
     if (actx && !muted){ const t = actx.currentTime; noiseHit(t, 2, 300, 0.3); tone(t, 60, 45, 2, 0.15, 'sawtooth'); }
   }
   if (S.open && !D.inDungeon && !playerIn){ S.closeT += dt; if (S.closeT > 25) S.open = false; } else S.closeT = 0;
   S.s = clamp(S.s + clamp((S.open ? 1 : 0) - S.s, -dt*0.6, dt*0.6), 0, 1);
+  // the throne slides aside, and the great banner rolls up to show the doorway behind it
   S.throne.position.x = S.slide*S.s;
   S.torch.rotation.x = -0.7*S.s;
-  S.hole.visible = S.s > 0.15;
-  if (playerIn && S.s > 0.9 && Math.hypot(D.pos.x - S.holeWorld.x, D.pos.z - S.holeWorld.z) < 4 + D.scale) enterDungeon();
+  S.hole.visible = false;
+  const bh = Math.max(0.04, 1 - S.s*0.96);
+  S.banner.scale.y = bh; S.banner.position.y = S.banTop - S.banH*bh/2;
+  S.roll.position.y = S.banTop - S.banH*bh; S.roll.scale.set(1 + S.s*1.3, 1, 1 + S.s*1.3);
+  for (const cr of S.crest) cr.visible = S.s < 0.25;
+  if (playerIn && S.s > 0.9 && D.pos.z < HALL.cz - HALL.hz + 2.2*D.scale + 3.5 && Math.abs(D.pos.x - HALL.cx) < 7.5) enterDungeon();
   // dungeon: the stairs lead back up, the vault holds a great treasure
   DUN.cool -= dt;
   if (!DUN.ready && DUN.cool <= 0) DUN.ready = true;
@@ -2994,7 +3241,14 @@ function updateInterior(dt){
     else if (DUN.ready){
       // stand on the hoard to claim it a little at a time, while the castle knights pour down the stairs to stop you
       const onIt = Math.hypot(D.pos.x - DUN.treasure.x, D.pos.z - DUN.treasure.z) < DUN.treasureR + 2*D.scale;
-      if (onIt && !DUN.found){ DUN.found = true; banner('The lost treasure of Emberhold!', true); sfxPower(); }
+      if (onIt && !DUN.found){ DUN.found = true; banner('The lost treasure of Emberhold! Stay on the gold to claim it', true); sfxPower(); }
+      // tell the player how it's going: every quarter claimed, and when they step off the gold
+      const step = Math.floor(DUN.progress*4);
+      if (step > DUN.step && step < 4){ DUN.step = step; banner(`${step*25}% of the treasure claimed! Keep going`, true); }
+      if (!onIt && DUN.progress > 0){
+        DUN.offT += dt;
+        if (DUN.offT > 1.5 && !DUN.offWarned){ DUN.offWarned = true; banner('Get back on the gold to keep claiming it!', true); }
+      } else { DUN.offT = 0; DUN.offWarned = false; }
       if (onIt){
         DUN.channeling = true;
         const dp = dt/DUN.CH_TIME, before = D.mass;
@@ -3013,13 +3267,15 @@ function updateInterior(dt){
           for (let k=0;k<14;k++) burst(tv.set(DUN.treasure.x + (Math.random()-0.5)*14, DUN.y + 3, DUN.treasure.z + (Math.random()-0.5)*20), 0xffd24a, 0xffffff, 10);
           banner(`You claimed the treasure of Emberhold! +${Math.round(DUN.gained)} size`, true);
           sfxPower(); chompFx(D); sfxRoar();
-          DUN.progress = 0; DUN.gained = 0;
+          DUN.progress = 0; DUN.gained = 0; DUN.step = 0; DUN.warnedKnights = false;
+          // the remaining knights flee back up the stairs
+          for (const k of guards) if (k.alive){ k.alive = false; k.g.visible = false; burst(tv.set(k.pos.x, DUN.y + 2, k.pos.z), 0x5a534c, 0x8a8174, 6); }
         }
       } else DUN.channeling = false;
       // knights keep coming as long as the hoard is being plundered
       if (DUN.progress > 0){
         DUN.spawnT -= dt*(onIt ? 1 : 0.5);
-        if (DUN.spawnT <= 0){ DUN.spawnT = 1.8 - DUN.progress*0.9; if (guards.filter(g => g.alive).length < 3 + Math.floor(DUN.progress*12)) spawnGuard(); }
+        if (DUN.spawnT <= 0){ DUN.spawnT = 3.2 - DUN.progress*1.2; if (guards.filter(g => g.alive).length < 2 + Math.floor(DUN.progress*4)) spawnGuard(); }
       }
     }
   }
@@ -3083,6 +3339,8 @@ function updateKing(dt, playerIn){
   if (playerIn && D.mouth.distanceTo(tv) < 3.4*D.scale + 3.5){
     K.gone = true; K.timer = 40; K.g.visible = false;
     grow(D, 10);
+    // a sparkle slips out of the king and starts showing you the way
+    if (!SECRET.open){ SECRET.wispOn = true; SECRET.wispPos.copy(tv); SECRET.wisp.visible = true; }
     D.hp = Math.min(maxHpFor(D.mass), D.hp + maxHpFor(D.mass)*0.25);
     chompFx(D); gulpFx(D, tv, 0x9a1a2a, 2.2); sfxChomp(true);
     burst(tv, 0x9a1a2a, 0xf2c24a, 26);
@@ -3132,9 +3390,9 @@ const guards = [];
   }
 }
 function spawnGuard(){
-  // captains join once the plunder is well under way
-  const wantCaptain = DUN.progress > 0.3 && Math.random() < 0.25 + DUN.progress*0.3;
-  const k = guards.find(g => !g.alive && g.captain === wantCaptain) || guards.find(g => !g.alive); if (!k) return;
+  // only ordinary knights in red come down now (the gold-armoured captains are gone)
+  const k = guards.find(g => !g.alive && !g.captain); if (!k) return;
+  if (!DUN.warnedKnights){ DUN.warnedKnights = true; banner('Knights are coming! Bite them or breathe fire to fight back', true); }
   k.alive = true; k.g.visible = true; k.hp = k.maxHp; k.swingT = 9; k.atkCool = 0.8;
   // they burst out of the stairwell, the prison cells, the cellar and the library, so you get surrounded
   const spot = Math.floor(Math.random()*5);
@@ -3162,7 +3420,7 @@ function updateGuards(dt){
     const reach = 2.2*D.scale + (k.captain ? 3.6 : 2.6);
     let dy = Math.atan2(dx, dz) - k.yaw; dy = Math.atan2(Math.sin(dy), Math.cos(dy));
     k.yaw += clamp(dy, -8*dt, 8*dt);
-    const spd = d > reach ? (k.captain ? 10.5 : 12.5) : 0;
+    const spd = d > reach ? 9 : 0;
     k.pos.x += Math.sin(k.yaw)*spd*dt; k.pos.z += Math.cos(k.yaw)*spd*dt;
     // keep apart from each other and out of the pillars, cells and walls
     for (const o of guards){
@@ -3181,9 +3439,9 @@ function updateGuards(dt){
     k.pos.z = clamp(k.pos.z, DUN.cz - DUN.hz + 1, DUN.cz + DUN.hz - 1);
     // sword attacks: wind up, then a downward slash
     k.atkCool -= dt; k.swingT += dt;
-    if (d <= reach + 0.6 && k.atkCool <= 0){ k.atkCool = (k.captain ? 1.5 : 1.15) + Math.random()*0.5; k.swingT = 0; }
+    if (d <= reach + 0.6 && k.atkCool <= 0){ k.atkCool = 1.8 + Math.random()*0.8; k.swingT = 0; }
     if (k.swingT >= 0.22 && k.swingT - dt < 0.22 && d <= reach + 1.4){
-      hurt(D, (2 + maxHpFor(D.mass)*(0.012 + DUN.progress*0.014))*(k.captain ? 1.7 : 1), null, 'Sword');
+      hurt(D, (1 + maxHpFor(D.mass)*(0.006 + DUN.progress*0.006)), null, 'Sword');
       burst(tv.set(k.pos.x + Math.sin(k.yaw)*2, DUN.y + 3, k.pos.z + Math.cos(k.yaw)*2), 0xffffff, 0xffe08a, 6);
       if (actx && !muted){ const t = actx.currentTime; tone(t, 1800, 1200, 0.08, 0.05, 'triangle'); noiseHit(t, 0.08, 4000, 0.12); }
     }
@@ -3418,6 +3676,13 @@ function drawMap(){
     const [bx,by] = toMap(boss.pos.x,boss.pos.z);
     mctx.beginPath(); mctx.arc(bx, by, 14 + Math.sin(now*6)*2, 0, Math.PI*2); mctx.strokeStyle = '#ff3a00'; mctx.lineWidth = 3; mctx.stroke();
     mapArrow(bx, by, boss.yaw, 1.6, hexOf(BOSS_PAL.scale), '#ff3a00');
+  }
+  // other real players: arrows pointing the way they face, with a white ring so they stand out from bots
+  for (const e of net.players.values()){
+    if (!e.alive) continue;
+    const [ex,ey] = toMap(e.pos.x,e.pos.z);
+    mctx.beginPath(); mctx.arc(ex, ey, 10, 0, Math.PI*2); mctx.strokeStyle = 'rgba(255,255,255,.85)'; mctx.lineWidth = 2; mctx.stroke();
+    mapArrow(ex, ey, e.yaw, clamp(0.55 + e.scale*0.3, 0.6, 1.4), hexOf(e.pal.scale), '#ffffff');
   }
   if (D.alive){ const [px,py] = toMap(D.pos.x,D.pos.z); mapArrow(px, py, D.yaw, 1.1, '#e5582c', '#fff6e4'); }
 }
@@ -4001,7 +4266,8 @@ function netTick(rdt){
   net.sendT = 0.1;
   const a = state === 'play' && D.alive;
   netSend({t:'s', a:a ? 1 : 0, n:D.name, k:skinId,
-    p:[+D.pos.x.toFixed(2), +D.pos.y.toFixed(2), +D.pos.z.toFixed(2)], r:[+D.yaw.toFixed(3), +D.pitch.toFixed(3), +D.roll.toFixed(3)],
+    // facing is wrapped to -π..π: it keeps growing as you turn, and the server only accepts -10..10
+    p:[+D.pos.x.toFixed(2), +D.pos.y.toFixed(2), +D.pos.z.toFixed(2)], r:[+Math.atan2(Math.sin(D.yaw), Math.cos(D.yaw)).toFixed(3), +D.pitch.toFixed(3), +D.roll.toFixed(3)],
     m:+D.mass.toFixed(1), h:Math.round(D.hp), b:D.boosting ? 1 : 0, w:D.walking ? 1 : 0, s:Math.round(D.speed),
     rm:D.inDungeon ? 1 : D.inHall ? 2 : 0,
     sw:D.walking && D.swimming ? 1 : 0, sit:+(D.walking ? D.sitB || 0 : 0).toFixed(2), air:+(D.walking ? D.air || 0 : 0).toFixed(1)});
@@ -4021,8 +4287,8 @@ function setHost(id){
 const r1 = v => Math.round(v*10)/10, r3 = v => Math.round(v*1000)/1000;
 function sendWorld(){
   netSend({t:'world',
-    bots: ais.map(e => e.alive ? [1, r1(e.pos.x), r1(e.pos.y), r1(e.pos.z), r3(e.yaw), r3(e.pitch), r3(e.roll), r1(e.mass), Math.round(e.hp), e.boosting ? 1 : 0, e.name, r3(e.jaw)] : [0, e.name]),
-    boss: boss.alive ? [1, r1(boss.pos.x), r1(boss.pos.y), r1(boss.pos.z), r3(boss.yaw), r3(boss.pitch), r3(boss.roll), Math.round(boss.hp), r3(boss.jaw)] : [0],
+    bots: ais.map(e => e.alive ? [1, r1(e.pos.x), r1(e.pos.y), r1(e.pos.z), r3(Math.atan2(Math.sin(e.yaw), Math.cos(e.yaw))), r3(e.pitch), r3(e.roll), r1(e.mass), Math.round(e.hp), e.boosting ? 1 : 0, e.name, r3(e.jaw)] : [0, e.name]),
+    boss: boss.alive ? [1, r1(boss.pos.x), r1(boss.pos.y), r1(boss.pos.z), r3(Math.atan2(Math.sin(boss.yaw), Math.cos(boss.yaw))), r3(boss.pitch), r3(boss.roll), Math.round(boss.hp), r3(boss.jaw)] : [0],
     bt: Math.round(bossTimer)});
 }
 // everyone else: show the host's world
@@ -4243,6 +4509,83 @@ function loop(){
   if (composer) composer.render(); else renderer.render(scene, camera);
 }
 addEventListener('resize', () => { camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); if (composer) composer.setSize(innerWidth, innerHeight); });
+// ---------- title-screen tips: a new one every few seconds, or click for the next ----------
+const TIPS = [
+  'Check out the castle! You can go inside!',
+  'The villages have villagers you can eat. They\'re pretty tasty!',
+  'Golden Eagles are worth +10 and heal you!',
+  'Hold Shift to boost, but it costs a little size!',
+  'Boost across a dragon\'s path to cut it off!',
+  'Hold C and touch the ground to land and walk!',
+  'Dragons can swim! Try walking into the lake!',
+  'Press X to sit down and rest!',
+  'When the Elder Wyrm rises, everyone fights it!',
+  'Green crystals double everything you eat!',
+  'Bigger dragons bite harder!',
+  'Chase a villager too long and they hide at home!',
+  'Knights guard the castle courtyard. Crunchy!',
+  'The king is worth as much as a Golden Eagle!',
+  'Fireballs home in on the dragon in your ring!',
+  'Defeat a dragon to swallow its whole size!',
+  'Press Space twice to take off again!',
+  'Boosting dragons drop embers. Follow them!',
+  'Flocks of sparrows circle the villages!',
+  'Gulls love the lake!',
+  'Press Enter mid-game to come back here!',
+  'Red crystals make your fire hit twice as hard!',
+  'Blue crystals make you breathe fire 3x as fast!',
+  'Watch out for the leader. Everyone wants them!',
+];
+let tipIdx = Math.floor(Math.random()*TIPS.length), tipTimer = null;
+function showTip(next){
+  tipIdx = (next === undefined ? tipIdx + 1 + Math.floor(Math.random()*(TIPS.length - 1)) : next) % TIPS.length;
+  $('splashText').textContent = TIPS[tipIdx];
+  clearInterval(tipTimer);
+  tipTimer = setInterval(() => { if (!$('menu').hidden) showTip(); }, 7000);
+}
+$('splash').addEventListener('click', () => showTip());
+showTip(tipIdx);
+
+// ---------- Objectives: a picture of every bird, drawn from its real 3D model ----------
+(function buildBirdRows(){
+  const body = $('birdRows'); if (!body) return;
+  const total = BIRD_TYPES.reduce((s, T) => s + T.count, 0);
+  let pr = null, ps = null, pc = null;
+  try {
+    pr = new THREE.WebGLRenderer({antialias:true, alpha:true, preserveDrawingBuffer:true});
+    pr.setPixelRatio(1); pr.setSize(168, 126);
+    ps = new THREE.Scene();
+    ps.add(new THREE.AmbientLight(0xffffff, 0.65));
+    const dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(3, 5, 4); ps.add(dl);
+    pc = new THREE.PerspectiveCamera(30, 168/126, 0.1, 100);
+  } catch(e){ pr = null; }
+  BIRD_TYPES.forEach(T => {
+    let src = '';
+    if (pr){
+      const model = BIRD_MODELS[T.name];
+      const mat = new THREE.MeshLambertMaterial({vertexColors:true, flatShading:true, side:THREE.DoubleSide, emissive:T.glow || 0});
+      const g = new THREE.Group();
+      g.add(new THREE.Mesh(model.body, mat));
+      const lw = new THREE.Group(); lw.position.set(0.28, 0.15, 0); lw.rotation.z = 0.35; lw.add(new THREE.Mesh(model.wing, mat)); g.add(lw);
+      const rw = new THREE.Group(); rw.position.set(-0.28, 0.15, 0); rw.scale.x = -1; rw.rotation.z = -0.35; rw.add(new THREE.Mesh(model.wing, mat)); g.add(rw);
+      g.rotation.set(0.35, 0.75, 0);
+      ps.add(g);
+      const box = new THREE.Box3().setFromObject(g), ctr = box.getCenter(new THREE.Vector3()), size = box.getSize(new THREE.Vector3()).length();
+      pc.position.set(ctr.x, ctr.y + size*0.12, ctr.z + size*1.2); pc.lookAt(ctr);
+      pr.render(ps, pc);
+      src = pr.domElement.toDataURL('image/png');
+      ps.remove(g); mat.dispose();
+    }
+    const tr = document.createElement('tr');
+    const pct = Math.round(T.count/total*1000)/10;
+    tr.innerHTML = `<td>${src ? `<img class="ico" alt="" src="${src}">` : ''}</td><td></td><td class="pts">+${T.pts}</td><td class="rate">${pct}%</td>`;
+    tr.children[1].textContent = T.name;
+    if (T.heal){ const s = document.createElement('small'); s.textContent = 'Rare, fast and glowing. Also heals you'; tr.children[1].appendChild(s); }
+    body.appendChild(tr);
+  });
+  if (pr){ pr.dispose(); try { pr.forceContextLoss(); } catch(e){} }
+})();
+
 netConnect();
 loop();
 })();
