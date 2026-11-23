@@ -3652,7 +3652,8 @@ const mapBase = document.createElement('canvas'); mapBase.width = MS; mapBase.he
 function toMap(x,z){ return [MS/2 - x/MAPR*MS/2, MS/2 + z/MAPR*MS/2]; } // map shows +X to the left so it matches the chase view
 const hexOf = n => '#' + new THREE.Color(n).getHexString();
 function mapArrow(x, y, yaw, s, fill, stroke){
-  mctx.save(); mctx.translate(x,y); mctx.rotate(Math.PI - yaw); mctx.scale(s,s);
+  // the map is mirrored left-to-right (so it matches the chase camera), so turning right must turn the arrow the other way too
+  mctx.save(); mctx.translate(x,y); mctx.rotate(Math.PI + yaw); mctx.scale(s,s);
   mctx.fillStyle = fill; mctx.strokeStyle = stroke; mctx.lineWidth = 2/s;
   mctx.beginPath(); mctx.moveTo(0,-12); mctx.lineTo(8,9); mctx.lineTo(0,4); mctx.lineTo(-8,9); mctx.closePath(); mctx.fill(); mctx.stroke();
   mctx.restore();
