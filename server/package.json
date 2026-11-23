@@ -1,0 +1,15 @@
+{
+  "name": "dragon-of-ashvale-server",
+  "version": "1.0.0",
+  "description": "Multiplayer server for Dragon of Ashvale",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

@@ -1,0 +1,631 @@
+<title>Ashvale Online Setup</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: a sticky step list on the left (wide screens), one reading column of numbered steps, each with a drawn screen and a callout. */
+:root{
+  --bg:#f5f3f1; --panel:#ffffff; --fg:#231c19; --muted:#6c615b; --line:#e2dcd7;
+  --accent:#c8481f; --accent-soft:#fbe5dc; --ok:#2f8a4c; --ok-soft:#ddf1e3; --warn:#9a6a00; --warn-soft:#fbefd0;
+  --scr:#fbfaf9; --scr-bar:#ece7e3; --scr-ink:#3b322d; --scr-faint:#d9d1cb; --scr-btn:#2f8a4c; --scr-btn-ink:#ffffff;
+  --display:'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --body:'Inter', 'Segoe UI', system-ui, sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#171311; --panel:#211b18; --fg:#f1e9e4; --muted:#ad9f97; --line:#3a312c;
+  --accent:#ff7a4d; --accent-soft:#3d2219; --ok:#6fd08f; --ok-soft:#1b3324; --warn:#f0c15a; --warn-soft:#3a2f14;
+  --scr:#1d1916; --scr-bar:#2c2521; --scr-ink:#e9dfd8; --scr-faint:#4a403a; --scr-btn:#3aa35d; --scr-btn-ink:#0f1a12;
+  color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#171311; --panel:#211b18; --fg:#f1e9e4; --muted:#ad9f97; --line:#3a312c;
+  --accent:#ff7a4d; --accent-soft:#3d2219; --ok:#6fd08f; --ok-soft:#1b3324; --warn:#f0c15a; --warn-soft:#3a2f14;
+  --scr:#1d1916; --scr-bar:#2c2521; --scr-ink:#e9dfd8; --scr-faint:#4a403a; --scr-btn:#3aa35d; --scr-btn-ink:#0f1a12;
+  color-scheme:dark }
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--body);padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0 64px}
+.wrap{max-width:1120px;margin:0 auto;display:grid;grid-template-columns:230px minmax(0,1fr);gap:48px}
+@media (max-width:860px){.wrap{grid-template-columns:minmax(0,1fr)} nav.toc{display:none}}
+header.top{max-width:1120px;margin:0 auto;padding-block:40px 28px}
+.eyebrow{font:600 12px var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+h1{font:800 clamp(34px,6vw,56px)/1.02 var(--display);margin:8px 0 14px;text-wrap:balance;letter-spacing:-.01em}
+.lede{max-width:64ch;color:var(--muted);font-size:18px;margin:0}
+.facts{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:14px}
+.fact b{color:var(--accent)}
+nav.toc{position:sticky;top:calc(env(safe-area-inset-top, 0px) + 20px);align-self:start;font-size:14px}
+nav.toc ol{list-style:none;margin:0;padding:0;display:grid;gap:2px;counter-reset:t}
+nav.toc a{display:flex;gap:10px;align-items:baseline;padding:6px 10px;border-radius:8px;color:var(--muted);text-decoration:none}
+nav.toc a:hover{background:var(--panel);color:var(--fg)}
+nav.toc a .n{font:600 12px var(--mono);color:var(--accent);min-width:20px}
+nav.toc a.done{color:var(--ok)} nav.toc a.done .n{color:var(--ok)}
+nav.toc .progress{margin:0 0 14px;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
+.meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:8px}
+.meter i{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+main{min-width:0}
+section.step{scroll-margin-top:20px;padding-block:28px 34px;border-top:1px solid var(--line)}
+section.step:first-of-type{border-top:none;padding-top:0}
+.sh{display:flex;gap:16px;align-items:flex-start}
+.num{flex:none;width:44px;height:44px;border-radius:12px;background:var(--accent);color:#fff;display:grid;place-items:center;font:800 20px var(--display)}
+.sh h2{font:800 clamp(24px,3.4vw,32px)/1.15 var(--display);margin:4px 0 4px;text-wrap:balance}
+.why{color:var(--muted);margin:0;max-width:64ch}
+.body{margin-left:60px;margin-top:16px;display:grid;gap:18px}
+@media (max-width:560px){.body{margin-left:0}}
+ol.sub{margin:0;padding-left:22px;display:grid;gap:9px;max-width:68ch}
+ol.sub li::marker{font-weight:700;color:var(--accent)}
+.ui{font-weight:700;background:var(--panel);border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;padding:0 6px;white-space:nowrap}
+code,.code{font:500 14px var(--mono)}
+code{background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:1px 5px;overflow-wrap:anywhere}
+figure{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px}
+figure svg{display:block;width:100%;height:auto;max-width:100%}
+figcaption{font-size:14px;color:var(--muted);margin-top:10px;display:flex;gap:8px;align-items:baseline}
+figcaption b{color:var(--accent);font-weight:700;white-space:nowrap}
+.note{border-radius:12px;padding:12px 16px;font-size:15px;max-width:72ch}
+.note.tip{background:var(--ok-soft)} .note.warn{background:var(--warn-soft)}
+.note b:first-child{display:block;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
+.note.tip b:first-child{color:var(--ok)} .note.warn b:first-child{color:var(--warn)}
+.settings{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+.settings .row{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px;border-top:1px solid var(--line)}
+.settings .row:first-child{border-top:none}
+.settings .k{font-weight:600;font-size:14px}
+.settings .v{font:500 14px var(--mono);overflow-wrap:anywhere;min-width:0}
+.settings .v.plain{font-family:var(--body)}
+@media (max-width:520px){.settings .row{grid-template-columns:minmax(0,1fr) auto}.settings .k{grid-column:1/-1}}
+button.copy{font:600 12px var(--body);border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:7px;padding:4px 10px;cursor:pointer}
+button.copy:hover{border-color:var(--accent)}
+button.copy:focus-visible,.check input:focus-visible+span,nav.toc a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.check{display:inline-flex;gap:10px;align-items:center;cursor:pointer;font-weight:600;font-size:15px;user-select:none;justify-self:start}
+.check input{position:absolute;opacity:0;width:1px;height:1px}
+.check span{width:22px;height:22px;border-radius:6px;border:2px solid var(--line);display:grid;place-items:center;background:var(--panel)}
+.check input:checked+span{background:var(--ok);border-color:var(--ok)}
+.check input:checked+span::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.tree{font:500 14px/1.75 var(--mono);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 16px;overflow-x:auto;white-space:pre}
+.tree .d{color:var(--accent)} .tree .c{color:var(--muted)}
+table.trouble{width:100%;border-collapse:collapse;font-size:15px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+table.trouble th,table.trouble td{text-align:left;padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+table.trouble th{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-top:none}
+table.trouble td:first-child{font-weight:600;min-width:180px}
+/* drawn screens */
+svg .win{fill:var(--scr);stroke:var(--scr-faint);stroke-width:1.5}
+svg .bar{fill:var(--scr-bar)}
+svg .faint{fill:var(--scr-faint)}
+svg .field{fill:var(--scr);stroke:var(--scr-faint);stroke-width:1.5}
+svg .t{fill:var(--scr-ink);font:500 13px var(--body)}
+svg .tb{fill:var(--scr-ink);font:700 14px var(--body)}
+svg .th{fill:var(--scr-ink);font:800 19px var(--display)}
+svg .tm{fill:var(--muted);font:500 12px var(--body)}
+svg .mono{fill:var(--scr-ink);font:500 12px var(--mono)}
+svg .btn{fill:var(--scr-btn)} svg .btnt{fill:var(--scr-btn-ink);font:700 13px var(--body)}
+svg .gbtn{fill:var(--scr-bar);stroke:var(--scr-faint);stroke-width:1.5}
+svg .hi{fill:none;stroke:var(--accent);stroke-width:3.5}
+svg .hif{fill:var(--accent)}
+svg .hit{fill:#fff;font:800 14px var(--display)}
+svg .link{fill:var(--accent);font:600 13px var(--body);text-decoration:underline}
+svg .okt{fill:var(--ok);font:700 13px var(--body)}
+svg .dot{fill:var(--scr-faint)}
+svg .folder{fill:var(--warn)}
+svg .file{fill:var(--scr-faint)}
+svg .drop{fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:7 6}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+footer{max-width:1120px;margin:40px auto 0;color:var(--muted);font-size:14px}
+</style>
+
+<header class="top">
+  <div class="eyebrow">Dragon of Ashvale · multiplayer</div>
+  <h1>Put your dragon game online</h1>
+  <p class="lede">A step-by-step guide to putting the multiplayer version on GitHub and running it on Render, so anyone can play from a link in their browser. You don't need any coding tools, just a web browser.</p>
+  <div class="facts">
+    <span class="fact">Time: <b>about 20 minutes</b></span>
+    <span class="fact">Cost: <b>free</b></span>
+    <span class="fact">You need: <b>an email address</b></span>
+  </div>
+</header>
+
+<div class="wrap">
+<nav class="toc" aria-label="Steps">
+  <div class="progress"><div id="progText">0 of 12 steps done</div><div class="meter"><i id="progBar"></i></div></div>
+  <ol id="tocList"></ol>
+</nav>
+
+<main>
+<div class="note warn" style="margin-bottom:28px"><b>About the pictures</b>The pictures are simplified drawings of each screen, with the part to click circled in orange. GitHub and Render change their designs from time to time, so the real pages may look a little different. Look for the same button names.</div>
+
+<!-- 1 -->
+<section class="step" id="s1" data-title="Get the game files">
+  <div class="sh"><div class="num">1</div><div><h2>Get the game files onto your computer</h2><p class="why">GitHub needs the files from the game's <code>server</code> folder. Copy them somewhere safe first.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>In Claude, ask: <i>"Open the server folder in File Explorer"</i>. A File Explorer window opens on that folder.</li>
+      <li>Make a new folder for the game, for example <code>Documents\dragon-of-ashvale</code>. In File Explorer, open <span class="ui">Documents</span>, right-click an empty spot, choose <span class="ui">New</span> → <span class="ui">Folder</span>, and name it.</li>
+      <li>Go back to the <code>server</code> folder, press <span class="ui">Ctrl</span> + <span class="ui">A</span> to select everything, then <span class="ui">Ctrl</span> + <span class="ui">C</span> to copy.</li>
+      <li>Open your new folder and press <span class="ui">Ctrl</span> + <span class="ui">V</span> to paste.</li>
+      <li>Check that the folder looks exactly like the picture: four files and one folder called <code>public</code> with <code>index.html</code> inside.</li>
+    </ol>
+    <div class="tree"><span class="d">dragon-of-ashvale/</span>
+├── <span class="d">public/</span>
+│   └── index.html      <span class="c">← the game itself (about 260 KB)</span>
+├── .gitignore          <span class="c">← may be hidden; that's fine</span>
+├── package.json        <span class="c">← tells the server what to install</span>
+├── README.md           <span class="c">← notes about the server</span>
+└── server.js           <span class="c">← the game server</span></div>
+    <figure>
+      <svg viewBox="0 0 640 300" role="img" aria-label="Drawing of File Explorer showing the dragon-of-ashvale folder with public, .gitignore, package.json, README.md and server.js">
+        <rect class="win" x="1" y="1" width="638" height="298" rx="10"/>
+        <rect class="bar" x="1" y="1" width="638" height="36" rx="10"/><rect class="bar" x="1" y="20" width="638" height="17"/>
+        <circle class="dot" cx="20" cy="19" r="5"/><circle class="dot" cx="36" cy="19" r="5"/><circle class="dot" cx="52" cy="19" r="5"/>
+        <rect class="field" x="80" y="9" width="420" height="20" rx="6"/><text class="tm" x="92" y="23">Documents › dragon-of-ashvale</text>
+        <rect class="faint" x="1" y="37" width="150" height="262"/>
+        <text class="t" x="18" y="66">Home</text><text class="t" x="18" y="92">Desktop</text><text class="t" x="18" y="118">Downloads</text><text class="tb" x="18" y="144">Documents</text>
+        <g transform="translate(176,56)">
+          <text class="tm" x="0" y="12">Name</text><text class="tm" x="300" y="12">Type</text>
+          <rect class="folder" x="0" y="28" width="20" height="15" rx="2"/><text class="tb" x="30" y="41">public</text><text class="tm" x="300" y="41">File folder</text>
+          <rect class="file" x="2" y="60" width="15" height="19" rx="2"/><text class="t" x="30" y="75">.gitignore</text><text class="tm" x="300" y="75">GITIGNORE file</text>
+          <rect class="file" x="2" y="94" width="15" height="19" rx="2"/><text class="t" x="30" y="109">package.json</text><text class="tm" x="300" y="109">JSON file</text>
+          <rect class="file" x="2" y="128" width="15" height="19" rx="2"/><text class="t" x="30" y="143">README.md</text><text class="tm" x="300" y="143">MD file</text>
+          <rect class="file" x="2" y="162" width="15" height="19" rx="2"/><text class="t" x="30" y="177">server.js</text><text class="tm" x="300" y="177">JavaScript file</text>
+          <rect class="hi" x="-10" y="20" width="440" height="170" rx="8"/>
+        </g>
+        <circle class="hif" cx="612" cy="70" r="14"/><text class="hit" x="607" y="75">✓</text>
+      </svg>
+      <figcaption><b>Check</b> Your folder should hold these five items. If <code>public</code> is missing, the game page won't load later.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c1"><span></span>I have the files</label>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="step" id="s2" data-title="Make a GitHub account">
+  <div class="sh"><div class="num">2</div><div><h2>Make a free GitHub account</h2><p class="why">GitHub stores your game's code online, where Render can pick it up. Skip this step if you already have an account.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>Go to <code>https://github.com</code> and click <span class="ui">Sign up</span> in the top-right corner.</li>
+      <li>Type your email address, a password, and a username. Your username shows in your game's GitHub address, so pick something you're happy to share (no real name needed).</li>
+      <li>Solve the quick puzzle that checks you're a person, then click <span class="ui">Create account</span>.</li>
+      <li>GitHub emails you a code. Open your email, copy the code, and type it into GitHub.</li>
+      <li>It may ask a few questions about how you'll use GitHub. You can skip them.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 330" role="img" aria-label="Drawing of the GitHub sign up form with email, password and username boxes and a Continue button">
+        <rect class="win" x="1" y="1" width="638" height="328" rx="10"/>
+        <rect class="bar" x="1" y="1" width="638" height="36" rx="10"/><rect class="bar" x="1" y="20" width="638" height="17"/>
+        <circle class="dot" cx="20" cy="19" r="5"/><circle class="dot" cx="36" cy="19" r="5"/><circle class="dot" cx="52" cy="19" r="5"/>
+        <rect class="field" x="80" y="9" width="420" height="20" rx="6"/><text class="tm" x="92" y="23">github.com/signup</text>
+        <text class="th" x="190" y="80">Create your free account</text>
+        <text class="tm" x="190" y="112">Email</text><rect class="field" x="190" y="118" width="260" height="30" rx="6"/><text class="t" x="200" y="138">you@example.com</text>
+        <text class="tm" x="190" y="170">Password</text><rect class="field" x="190" y="176" width="260" height="30" rx="6"/><text class="t" x="200" y="196">••••••••••••</text>
+        <text class="tm" x="190" y="228">Username</text><rect class="field" x="190" y="234" width="260" height="30" rx="6"/><text class="t" x="200" y="254">dragonmaker</text>
+        <rect class="btn" x="190" y="280" width="260" height="32" rx="6"/><text class="btnt" x="290" y="301">Continue</text>
+        <rect class="hi" x="182" y="272" width="276" height="48" rx="9"/>
+        <circle class="hif" cx="478" cy="296" r="14"/><text class="hit" x="473" y="301">1</text>
+      </svg>
+      <figcaption><b>Sign up</b> Fill in the three boxes, then click the green button. Use a password you don't use anywhere else.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c2"><span></span>I'm signed in to GitHub</label>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="step" id="s3" data-title="Create a repository">
+  <div class="sh"><div class="num">3</div><div><h2>Create a repository for the game</h2><p class="why">A repository (or "repo") is a folder on GitHub that holds a project's files.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>Click the <span class="ui">+</span> button in the top-right corner of any GitHub page, then click <span class="ui">New repository</span>.</li>
+      <li>In <b>Repository name</b>, type <code>dragon-of-ashvale</code>.</li>
+      <li>Choose <span class="ui">Public</span>. Render's free plan works most simply with public repos. Anyone can see the code, but only you can change it.</li>
+      <li>Leave <b>Add a README file</b> unticked, because the game already has one. Leave <b>.gitignore</b> and <b>license</b> set to None.</li>
+      <li>Click the green <span class="ui">Create repository</span> button at the bottom.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 230" role="img" aria-label="Drawing of the top-right corner of GitHub with the plus menu open and New repository circled">
+        <rect class="win" x="1" y="1" width="638" height="228" rx="10"/>
+        <rect class="bar" x="1" y="1" width="638" height="48" rx="10"/><rect class="bar" x="1" y="30" width="638" height="19"/>
+        <circle class="dot" cx="26" cy="25" r="11"/><rect class="field" x="50" y="13" width="240" height="24" rx="6"/><text class="tm" x="62" y="29">Type / to search</text>
+        <rect class="gbtn" x="500" y="12" width="44" height="26" rx="6"/><text class="tb" x="510" y="30">+ ▾</text>
+        <circle class="dot" cx="600" cy="25" r="13"/>
+        <rect class="hi" x="494" y="6" width="56" height="38" rx="8"/>
+        <circle class="hif" cx="474" cy="25" r="14"/><text class="hit" x="469" y="30">1</text>
+        <rect class="win" x="380" y="54" width="230" height="150" rx="8"/>
+        <rect class="faint" x="388" y="64" width="214" height="32" rx="6"/><text class="tb" x="400" y="85">New repository</text>
+        <text class="t" x="400" y="120">Import repository</text><text class="t" x="400" y="150">New codespace</text><text class="t" x="400" y="180">New gist</text>
+        <rect class="hi" x="382" y="58" width="226" height="44" rx="8"/>
+        <circle class="hif" cx="358" cy="80" r="14"/><text class="hit" x="353" y="85">2</text>
+      </svg>
+      <figcaption><b>Find it</b> The + button is next to your profile picture, top-right.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 640 360" role="img" aria-label="Drawing of the new repository form with name dragon-of-ashvale, Public selected, Add a README unticked, and Create repository button">
+        <rect class="win" x="1" y="1" width="638" height="358" rx="10"/>
+        <text class="th" x="40" y="46">Create a new repository</text>
+        <text class="tm" x="40" y="82">Owner</text><text class="tm" x="210" y="82">Repository name *</text>
+        <rect class="field" x="40" y="90" width="150" height="30" rx="6"/><text class="t" x="52" y="110">dragonmaker ▾</text>
+        <text class="tb" x="196" y="110">/</text>
+        <rect class="field" x="210" y="90" width="230" height="30" rx="6"/><text class="mono" x="222" y="110">dragon-of-ashvale</text>
+        <rect class="hi" x="203" y="83" width="244" height="44" rx="8"/><circle class="hif" cx="466" cy="105" r="14"/><text class="hit" x="461" y="110">1</text>
+        <circle class="field" cx="50" cy="160" r="8"/><circle class="hif" cx="50" cy="160" r="4"/><text class="tb" x="66" y="165">Public</text><text class="tm" x="122" y="165">Anyone can see this repository</text>
+        <circle class="field" cx="50" cy="192" r="8"/><text class="t" x="66" y="197">Private</text>
+        <rect class="hi" x="34" y="144" width="320" height="32" rx="8"/><circle class="hif" cx="374" cy="160" r="14"/><text class="hit" x="369" y="165">2</text>
+        <rect class="field" x="42" y="226" width="16" height="16" rx="3"/><text class="t" x="68" y="239">Add a README file</text><text class="tm" x="196" y="239">← leave this unticked</text>
+        <rect class="btn" x="440" y="300" width="160" height="34" rx="6"/><text class="btnt" x="459" y="322">Create repository</text>
+        <rect class="hi" x="432" y="292" width="176" height="50" rx="9"/><circle class="hif" cx="412" cy="317" r="14"/><text class="hit" x="407" y="322">3</text>
+      </svg>
+      <figcaption><b>Fill in</b> The name, Public, then the green button. Leave everything else as it is.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c3"><span></span>My repository exists</label>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="step" id="s4" data-title="Upload the files">
+  <div class="sh"><div class="num">4</div><div><h2>Upload the game files</h2><p class="why">You'll drag your folder's contents straight into the browser. No Git program needed.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>On the new, empty repository page, find the line <i>"…or create a new file or upload an existing file"</i> and click <span class="ui">uploading an existing file</span>.</li>
+      <li>Open your <code>dragon-of-ashvale</code> folder in File Explorer and put the two windows side by side.</li>
+      <li>In File Explorer, click inside the folder and press <span class="ui">Ctrl</span> + <span class="ui">A</span> to select everything, <b>including the <code>public</code> folder</b>.</li>
+      <li>Drag the selection onto the dotted box in the browser and let go. A list of files appears under the box.</li>
+      <li>Check that the list includes <code>public/index.html</code>. If it doesn't, finish this step anyway and then do step 5.</li>
+      <li>Scroll down. Under <b>Commit changes</b>, the message can stay as "Add files via upload". Click the green <span class="ui">Commit changes</span> button.</li>
+      <li>Wait a few seconds while it uploads. You'll land back on the repository page with your files listed.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 220" role="img" aria-label="Drawing of an empty repository page with the link uploading an existing file circled">
+        <rect class="win" x="1" y="1" width="638" height="218" rx="10"/>
+        <text class="th" x="30" y="44">dragonmaker / dragon-of-ashvale</text>
+        <rect class="faint" x="30" y="66" width="580" height="122" rx="8"/>
+        <text class="tb" x="50" y="96">Quick setup — if you've done this kind of thing before</text>
+        <rect class="field" x="50" y="108" width="400" height="26" rx="5"/><text class="mono" x="60" y="125">https://github.com/dragonmaker/dragon-of-ashvale.git</text>
+        <text class="t" x="50" y="166">Get started by creating a new file or</text>
+        <text class="link" x="281" y="166">uploading an existing file</text>
+        <rect class="hi" x="273" y="148" width="180" height="28" rx="7"/><circle class="hif" cx="474" cy="162" r="14"/><text class="hit" x="469" y="167">1</text>
+      </svg>
+      <figcaption><b>Click</b> The upload link is in the middle of a sentence on the empty repo page.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 640 380" role="img" aria-label="Drawing of the upload page with files dragged onto the dotted area, a list of uploaded files including public/index.html, and the Commit changes button">
+        <rect class="win" x="1" y="1" width="638" height="378" rx="10"/>
+        <rect class="drop" x="30" y="24" width="580" height="120" rx="10"/>
+        <rect class="file" x="300" y="44" width="34" height="42" rx="4"/>
+        <text class="tb" x="196" y="112">Drag files here to add them to your repository</text>
+        <text class="tm" x="262" y="132">Or choose your files</text>
+        <rect class="hi" x="24" y="18" width="592" height="132" rx="13"/><circle class="hif" cx="608" cy="22" r="14"/><text class="hit" x="603" y="27">1</text>
+        <g transform="translate(30,168)">
+          <text class="t" x="0" y="14">📄 .gitignore</text><text class="t" x="0" y="38">📄 package.json</text><text class="okt" x="0" y="62">📄 public/index.html</text>
+          <text class="t" x="0" y="86">📄 README.md</text><text class="t" x="0" y="110">📄 server.js</text>
+          <rect class="hi" x="-8" y="46" width="190" height="24" rx="6"/><text class="tm" x="196" y="63">← make sure this one is here</text>
+        </g>
+        <rect class="btn" x="30" y="300" width="150" height="34" rx="6"/><text class="btnt" x="48" y="322">Commit changes</text>
+        <rect class="hi" x="22" y="292" width="166" height="50" rx="9"/><circle class="hif" cx="208" cy="317" r="14"/><text class="hit" x="203" y="322">2</text>
+      </svg>
+      <figcaption><b>Drag, check, commit</b> "Commit" is GitHub's word for saving a change.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c4"><span></span>Files uploaded and committed</label>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="step" id="s5" data-title="Check the files">
+  <div class="sh"><div class="num">5</div><div><h2>Check the files, and fix a missing <code>public</code> folder</h2><p class="why">Some browsers quietly skip folders when you drag them. The game page lives in <code>public</code>, so it must be there.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>Look at your repository's main page. You should see <code>public</code> (a folder), <code>.gitignore</code>, <code>README.md</code>, <code>package.json</code> and <code>server.js</code>. A missing <code>.gitignore</code> is fine.</li>
+      <li>Click <code>public</code>. Inside should be <code>index.html</code>. <b>If it's there, this step is done.</b></li>
+      <li><b>If <code>public</code> is missing:</b> on the repo's main page click <span class="ui">Add file</span> → <span class="ui">Create new file</span>. Don't use Upload files for this one, because it would put <code>index.html</code> in the wrong place.</li>
+      <li>In the name box type <code>public/</code>. Typing the slash turns <code>public</code> into a folder. Then type <code>index.html</code>.</li>
+      <li>Open <code>index.html</code> from your computer in Notepad (right-click → <span class="ui">Open with</span> → <span class="ui">Notepad</span>), press <span class="ui">Ctrl</span> + <span class="ui">A</span>, then <span class="ui">Ctrl</span> + <span class="ui">C</span>.</li>
+      <li>Click in GitHub's big editing box and press <span class="ui">Ctrl</span> + <span class="ui">V</span>. It's a long file, so give it a moment.</li>
+      <li>Click <span class="ui">Commit changes…</span>, then <span class="ui">Commit changes</span> again in the box that pops up.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 280" role="img" aria-label="Drawing of the repository file list showing public, .gitignore, README.md, package.json and server.js">
+        <rect class="win" x="1" y="1" width="638" height="278" rx="10"/>
+        <text class="th" x="30" y="44">dragon-of-ashvale</text>
+        <rect class="gbtn" x="430" y="24" width="90" height="28" rx="6"/><text class="tb" x="442" y="43">Add file ▾</text>
+        <rect class="btn" x="528" y="24" width="82" height="28" rx="6"/><text class="btnt" x="540" y="43">Code ▾</text>
+        <rect class="faint" x="30" y="66" width="580" height="30" rx="6"/><text class="tm" x="44" y="86">dragonmaker  Add files via upload</text>
+        <g transform="translate(44,108)">
+          <rect class="folder" x="0" y="4" width="18" height="13" rx="2"/><text class="tb" x="28" y="16">public</text>
+          <rect class="file" x="2" y="32" width="13" height="16" rx="2"/><text class="t" x="28" y="45">.gitignore</text>
+          <rect class="file" x="2" y="62" width="13" height="16" rx="2"/><text class="t" x="28" y="75">README.md</text>
+          <rect class="file" x="2" y="92" width="13" height="16" rx="2"/><text class="t" x="28" y="105">package.json</text>
+          <rect class="file" x="2" y="122" width="13" height="16" rx="2"/><text class="t" x="28" y="135">server.js</text>
+          <rect class="hi" x="-8" y="-4" width="130" height="28" rx="7"/><text class="tm" x="132" y="16">← click to check index.html is inside</text>
+        </g>
+      </svg>
+      <figcaption><b>Good</b> This is what a correct repository looks like. Note the <span class="ui">Add file</span> button, which you'll need if <code>public</code> is missing.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 640 230" role="img" aria-label="Drawing of the create new file page with public/index.html typed as the name and a large editing box">
+        <rect class="win" x="1" y="1" width="638" height="228" rx="10"/>
+        <text class="tb" x="30" y="40">dragon-of-ashvale /</text>
+        <text class="tb" x="178" y="40">public /</text>
+        <rect class="field" x="238" y="22" width="170" height="28" rx="6"/><text class="mono" x="248" y="41">index.html</text>
+        <rect class="hi" x="170" y="16" width="246" height="40" rx="8"/><circle class="hif" cx="436" cy="36" r="14"/><text class="hit" x="431" y="41">1</text>
+        <rect class="btn" x="476" y="22" width="134" height="28" rx="6"/><text class="btnt" x="488" y="41">Commit changes…</text>
+        <rect class="field" x="30" y="68" width="580" height="140" rx="6"/>
+        <text class="mono" x="44" y="92">&lt;!doctype html&gt;</text><text class="mono" x="44" y="112">&lt;html lang="en"&gt;</text><text class="mono" x="44" y="132">&lt;meta charset="utf-8"&gt;</text>
+        <text class="tm" x="44" y="190">← paste the whole of index.html here</text>
+      </svg>
+      <figcaption><b>Fix</b> Typing <code>public/</code> into the name box makes the folder for you.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c5"><span></span>public/index.html is on GitHub</label>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="step" id="s6" data-title="Make a Render account">
+  <div class="sh"><div class="num">6</div><div><h2>Make a Render account using GitHub</h2><p class="why">Render runs <code>server.js</code> on a computer that's always online and gives you a web address. Signing up with GitHub connects the two.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>Go to <code>https://render.com</code> and click <span class="ui">Get Started</span> (or <span class="ui">Sign Up</span>).</li>
+      <li>Click <span class="ui">GitHub</span> to sign up with your GitHub account.</li>
+      <li>GitHub asks whether to let Render use your account. Click <span class="ui">Authorize</span>.</li>
+      <li>Render may ask you to confirm your email and answer a few questions. If it asks for a payment card, that's Render's rule at the time. The Free instance type you'll pick in step 8 doesn't charge.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 270" role="img" aria-label="Drawing of a sign up page with buttons for GitHub, GitLab, Google and email, with GitHub circled">
+        <rect class="win" x="1" y="1" width="638" height="268" rx="10"/>
+        <text class="th" x="218" y="56">Create an account</text>
+        <rect class="gbtn" x="200" y="80" width="240" height="38" rx="7"/><text class="tb" x="282" y="104">GitHub</text>
+        <rect class="hi" x="192" y="72" width="256" height="54" rx="10"/><circle class="hif" cx="468" cy="99" r="14"/><text class="hit" x="463" y="104">1</text>
+        <rect class="gbtn" x="200" y="132" width="240" height="38" rx="7"/><text class="t" x="284" y="156">GitLab</text>
+        <rect class="gbtn" x="200" y="180" width="240" height="38" rx="7"/><text class="t" x="284" y="204">Google</text>
+        <text class="tm" x="236" y="246">or sign up with email</text>
+      </svg>
+      <figcaption><b>Pick GitHub</b> That way Render can see your repositories.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c6"><span></span>I'm signed in to Render</label>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="step" id="s7" data-title="New web service">
+  <div class="sh"><div class="num">7</div><div><h2>Create a new web service</h2><p class="why">A "web service" is Render's name for a program that runs all the time and answers visitors, which is what a game server is.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>On your Render dashboard, click <span class="ui">+ New</span> in the top-right corner (it may say <span class="ui">Add new</span>).</li>
+      <li>Choose <span class="ui">Web Service</span>. Not Static Site, because static sites can't run the server.</li>
+      <li>Under <b>Source Code</b>, pick <span class="ui">Git Provider</span> and then <span class="ui">GitHub</span> if it asks.</li>
+      <li>Find <code>dragon-of-ashvale</code> in the list and click <span class="ui">Connect</span> next to it.</li>
+      <li><b>Repo not in the list?</b> Click <span class="ui">Configure account</span> (or <span class="ui">Configure GitHub</span>). On GitHub, choose <span class="ui">Only select repositories</span>, pick <code>dragon-of-ashvale</code>, click <span class="ui">Save</span>, and go back to Render.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 250" role="img" aria-label="Drawing of the Render dashboard with the New menu open and Web Service circled">
+        <rect class="win" x="1" y="1" width="638" height="248" rx="10"/>
+        <rect class="bar" x="1" y="1" width="638" height="46" rx="10"/><rect class="bar" x="1" y="28" width="638" height="19"/>
+        <text class="tb" x="24" y="30">Dashboard</text>
+        <rect class="btn" x="522" y="11" width="96" height="26" rx="6"/><text class="btnt" x="542" y="29">+ New ▾</text>
+        <rect class="hi" x="515" y="5" width="110" height="38" rx="8"/><circle class="hif" cx="494" cy="24" r="14"/><text class="hit" x="489" y="29">1</text>
+        <rect class="win" x="408" y="52" width="210" height="180" rx="8"/>
+        <text class="t" x="424" y="80">Static Site</text>
+        <rect class="faint" x="414" y="92" width="198" height="30" rx="6"/><text class="tb" x="424" y="112">Web Service</text>
+        <text class="t" x="424" y="146">Private Service</text><text class="t" x="424" y="176">Background Worker</text><text class="t" x="424" y="206">Postgres</text>
+        <rect class="hi" x="408" y="86" width="210" height="42" rx="8"/><circle class="hif" cx="386" cy="107" r="14"/><text class="hit" x="381" y="112">2</text>
+      </svg>
+      <figcaption><b>Choose</b> Web Service is the one that can run <code>server.js</code>.</figcaption>
+    </figure>
+    <figure>
+      <svg viewBox="0 0 640 220" role="img" aria-label="Drawing of a list of GitHub repositories with a Connect button next to dragon-of-ashvale">
+        <rect class="win" x="1" y="1" width="638" height="218" rx="10"/>
+        <text class="th" x="30" y="44">Connect a repository</text>
+        <rect class="field" x="30" y="60" width="580" height="30" rx="6"/><text class="tm" x="42" y="80">Search…</text>
+        <rect class="faint" x="30" y="102" width="580" height="44" rx="7"/>
+        <text class="tb" x="46" y="129">dragonmaker / dragon-of-ashvale</text>
+        <rect class="btn" x="514" y="110" width="84" height="28" rx="6"/><text class="btnt" x="530" y="129">Connect</text>
+        <rect class="hi" x="507" y="104" width="98" height="40" rx="8"/><circle class="hif" cx="486" cy="124" r="14"/><text class="hit" x="481" y="129">3</text>
+        <text class="tm" x="30" y="180">Can't see your repo?</text><text class="link" x="160" y="180">Configure account</text>
+      </svg>
+      <figcaption><b>Connect</b> If your repo isn't listed, use the Configure link under the list.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c7"><span></span>Repository connected</label>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="step" id="s8" data-title="Fill in the settings">
+  <div class="sh"><div class="num">8</div><div><h2>Fill in the settings</h2><p class="why">These tell Render how to install and start the server. Copy them exactly. Use the Copy buttons to avoid typos.</p></div></div>
+  <div class="body">
+    <div class="settings" role="table" aria-label="Render settings">
+      <div class="row" role="row"><span class="k" role="cell">Name</span><span class="v" role="cell">dragon-of-ashvale</span><button class="copy" type="button" data-copy="dragon-of-ashvale">Copy</button></div>
+      <div class="row" role="row"><span class="k" role="cell">Language / Runtime</span><span class="v plain" role="cell">Node</span><span></span></div>
+      <div class="row" role="row"><span class="k" role="cell">Branch</span><span class="v" role="cell">main</span><span></span></div>
+      <div class="row" role="row"><span class="k" role="cell">Region</span><span class="v plain" role="cell">The one closest to you and your friends</span><span></span></div>
+      <div class="row" role="row"><span class="k" role="cell">Root Directory</span><span class="v plain" role="cell">Leave empty</span><span></span></div>
+      <div class="row" role="row"><span class="k" role="cell">Build Command</span><span class="v" role="cell">npm install</span><button class="copy" type="button" data-copy="npm install">Copy</button></div>
+      <div class="row" role="row"><span class="k" role="cell">Start Command</span><span class="v" role="cell">npm start</span><button class="copy" type="button" data-copy="npm start">Copy</button></div>
+      <div class="row" role="row"><span class="k" role="cell">Instance Type</span><span class="v plain" role="cell">Free</span><span></span></div>
+    </div>
+    <ol class="sub">
+      <li>The <b>Name</b> becomes your game's address, so <code>dragon-of-ashvale</code> gives <code>dragon-of-ashvale.onrender.com</code>. If the name is taken, Render adds a few letters to the end, which is fine.</li>
+      <li>Render often fills in <b>Build Command</b> with something like <code>yarn</code>. Delete it and paste <code>npm install</code>.</li>
+      <li>Under <b>Instance Type</b>, scroll and pick <span class="ui">Free</span>.</li>
+      <li>Don't add any environment variables. Render sets <code>PORT</code> by itself, and the server reads it.</li>
+      <li>Click <span class="ui">Deploy Web Service</span> at the bottom (it may say <span class="ui">Create Web Service</span>).</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 410" role="img" aria-label="Drawing of the web service settings form with Name, Language Node, Build Command npm install, Start Command npm start, Instance Type Free and the Deploy Web Service button">
+        <rect class="win" x="1" y="1" width="638" height="408" rx="10"/>
+        <text class="tm" x="30" y="40">Name</text><rect class="field" x="190" y="22" width="300" height="28" rx="6"/><text class="mono" x="202" y="41">dragon-of-ashvale</text>
+        <text class="tm" x="30" y="82">Language</text><rect class="field" x="190" y="64" width="300" height="28" rx="6"/><text class="t" x="202" y="83">Node ▾</text>
+        <text class="tm" x="30" y="124">Branch</text><rect class="field" x="190" y="106" width="300" height="28" rx="6"/><text class="t" x="202" y="125">main ▾</text>
+        <text class="tm" x="30" y="166">Root Directory</text><rect class="field" x="190" y="148" width="300" height="28" rx="6"/><text class="tm" x="202" y="167">(leave empty)</text>
+        <text class="tm" x="30" y="208">Build Command</text><rect class="field" x="190" y="190" width="300" height="28" rx="6"/><text class="mono" x="202" y="209">npm install</text>
+        <text class="tm" x="30" y="250">Start Command</text><rect class="field" x="190" y="232" width="300" height="28" rx="6"/><text class="mono" x="202" y="251">npm start</text>
+        <rect class="hi" x="182" y="184" width="316" height="82" rx="9"/><circle class="hif" cx="520" cy="225" r="14"/><text class="hit" x="515" y="230">1</text>
+        <text class="tm" x="30" y="292">Instance Type</text>
+        <rect class="field" x="190" y="276" width="96" height="40" rx="7"/><text class="tb" x="212" y="301">Free</text>
+        <rect class="field" x="294" y="276" width="96" height="40" rx="7"/><text class="tm" x="306" y="301">Starter</text>
+        <rect class="field" x="398" y="276" width="96" height="40" rx="7"/><text class="tm" x="410" y="301">Standard</text>
+        <rect class="hi" x="183" y="269" width="110" height="54" rx="9"/><circle class="hif" cx="164" cy="296" r="14"/><text class="hit" x="159" y="301">2</text>
+        <rect class="btn" x="190" y="348" width="180" height="36" rx="6"/><text class="btnt" x="211" y="371">Deploy Web Service</text>
+        <rect class="hi" x="182" y="340" width="196" height="52" rx="10"/><circle class="hif" cx="398" cy="366" r="14"/><text class="hit" x="393" y="371">3</text>
+      </svg>
+      <figcaption><b>Settings</b> The two commands matter most. A wrong one is the most common reason a deploy fails.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c8"><span></span>Settings filled in and deploy started</label>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="step" id="s9" data-title="Wait for it to go live">
+  <div class="sh"><div class="num">9</div><div><h2>Wait for it to go live</h2><p class="why">Render downloads your code, installs the one library it needs, and starts the server. It takes 2–5 minutes the first time.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>Watch the <b>Logs</b> panel. Lines scroll past as Render works. That's normal.</li>
+      <li>You're looking for two lines near the end: <code>Dragon of Ashvale server on http://localhost:10000</code> (the number may differ) and <code>Your service is live 🎉</code>.</li>
+      <li>The status badge at the top turns green and says <span class="ui">Live</span>.</li>
+      <li>Your game's address is shown near the top, under the service name, like <code>https://dragon-of-ashvale.onrender.com</code>. Click it to copy or open it.</li>
+      <li>If you see <b>Build failed</b> or <b>Exited with status 1</b>, see the troubleshooting table at the bottom.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 330" role="img" aria-label="Drawing of the service page with a green Live badge, the onrender.com address, and log lines ending with Your service is live">
+        <rect class="win" x="1" y="1" width="638" height="328" rx="10"/>
+        <text class="th" x="30" y="44">dragon-of-ashvale</text>
+        <rect class="btn" x="240" y="26" width="56" height="24" rx="12"/><text class="btnt" x="252" y="43">Live</text>
+        <text class="link" x="30" y="74">https://dragon-of-ashvale.onrender.com</text>
+        <rect class="hi" x="22" y="56" width="282" height="28" rx="7"/><circle class="hif" cx="324" cy="70" r="14"/><text class="hit" x="319" y="75">1</text>
+        <rect class="faint" x="30" y="100" width="580" height="210" rx="8"/>
+        <text class="mono" x="46" y="128">==&gt; Running build command 'npm install'...</text>
+        <text class="mono" x="46" y="150">added 1 package in 2s</text>
+        <text class="mono" x="46" y="172">==&gt; Build successful 🎉</text>
+        <text class="mono" x="46" y="194">==&gt; Running 'npm start'</text>
+        <text class="mono" x="46" y="216">Dragon of Ashvale server on http://localhost:10000</text>
+        <text class="mono" x="46" y="260">==&gt; Your service is live 🎉</text>
+        <rect class="hi" x="38" y="200" width="420" height="70" rx="8"/><circle class="hif" cx="480" cy="235" r="14"/><text class="hit" x="475" y="240">2</text>
+      </svg>
+      <figcaption><b>Done when</b> The badge says Live and the log says the server started.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c9"><span></span>My service is Live</label>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="step" id="s10" data-title="Play and test">
+  <div class="sh"><div class="num">10</div><div><h2>Play, and test with two tabs</h2><p class="why">Make sure multiplayer works before you send the link to friends.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>Open your <code>onrender.com</code> address. Under the <span class="ui">Take flight</span> button you should see a small green <b>Online</b> label.</li>
+      <li>Type a nickname and click <span class="ui">Take flight</span>.</li>
+      <li>Open the same address in a <b>second tab</b> (or on your phone), with a different nickname. Fly both dragons near each other. Each tab should see the other dragon and its name tag.</li>
+      <li>Check the shared bots: both tabs should show the same bot names on the leaderboard (top right).</li>
+      <li>When everything works, send the link to friends. Up to 30 players share a room. After that, a second room opens by itself.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 300" role="img" aria-label="Drawing of the game start screen with a nickname box, the Take flight button, and a green Online label under it">
+        <rect class="win" x="1" y="1" width="638" height="298" rx="10"/>
+        <rect class="faint" x="170" y="26" width="300" height="250" rx="12"/>
+        <text class="th" x="226" y="66">Dragon of Ashvale</text>
+        <rect class="field" x="210" y="90" width="220" height="32" rx="8"/><text class="t" x="276" y="111">Nickname</text>
+        <g><circle cx="236" cy="150" r="12" fill="#9e2520"/><circle cx="268" cy="150" r="12" fill="#1e1b24"/><circle cx="300" cy="150" r="12" fill="#bfe3f2"/><circle cx="332" cy="150" r="12" fill="#1f8a4c"/><circle cx="364" cy="150" r="12" fill="#e0a82e"/><circle cx="396" cy="150" r="12" fill="#e86a8a"/></g>
+        <rect x="248" y="180" width="144" height="38" rx="6" fill="#e5582c"/><text class="btnt" x="279" y="204">Take flight</text>
+        <text class="okt" x="296" y="244">Online</text>
+        <rect class="hi" x="282" y="228" width="76" height="24" rx="6"/><circle class="hif" cx="378" cy="240" r="14"/><text class="hit" x="373" y="245">✓</text>
+      </svg>
+      <figcaption><b>Look for</b> "Online" means the game found your server. "Offline – reconnecting…" usually means the server is still waking up.</figcaption>
+    </figure>
+    <div class="note tip"><b>Free plan note</b>The free server goes to sleep after 15 minutes with nobody playing. The next visitor waits about a minute while it wakes up. Then it's normal again. Render's paid instance types stay awake all the time.</div>
+    <label class="check"><input type="checkbox" id="c10"><span></span>Two tabs can see each other</label>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="step" id="s11" data-title="Update the game later">
+  <div class="sh"><div class="num">11</div><div><h2>Update the game later</h2><p class="why">When the game gets new features, put the new version on GitHub and Render updates by itself.</p></div></div>
+  <div class="body">
+    <ol class="sub">
+      <li>On GitHub, open your repository, click <code>public</code>, then <code>index.html</code>.</li>
+      <li>Click the <b>pencil</b> icon (Edit this file) at the top-right of the file.</li>
+      <li>Click inside the editor, press <span class="ui">Ctrl</span> + <span class="ui">A</span>, and press <span class="ui">Delete</span>.</li>
+      <li>Open the new <code>index.html</code> in Notepad, copy all of it, and paste it into GitHub.</li>
+      <li>Click <span class="ui">Commit changes…</span> → <span class="ui">Commit changes</span>.</li>
+      <li>Render notices within a minute and redeploys (watch for <b>Live</b> again). Players already in the game should refresh the page.</li>
+    </ol>
+    <figure>
+      <svg viewBox="0 0 640 170" role="img" aria-label="Drawing of a file page on GitHub with the pencil edit button circled">
+        <rect class="win" x="1" y="1" width="638" height="168" rx="10"/>
+        <text class="tb" x="30" y="40">dragon-of-ashvale / public / index.html</text>
+        <rect class="gbtn" x="452" y="22" width="34" height="28" rx="6"/><text class="tb" x="462" y="42">✎</text>
+        <rect class="gbtn" x="494" y="22" width="44" height="28" rx="6"/><text class="t" x="504" y="41">Raw</text>
+        <rect class="hi" x="445" y="15" width="48" height="42" rx="8"/><circle class="hif" cx="424" cy="36" r="14"/><text class="hit" x="419" y="41">1</text>
+        <rect class="faint" x="30" y="66" width="580" height="86" rx="6"/>
+        <text class="mono" x="44" y="92">&lt;!doctype html&gt;</text><text class="mono" x="44" y="112">&lt;html lang="en"&gt;</text><text class="mono" x="44" y="132">&lt;meta charset="utf-8"&gt;</text>
+      </svg>
+      <figcaption><b>Edit</b> The pencil opens the file for editing right in the browser.</figcaption>
+    </figure>
+    <label class="check"><input type="checkbox" id="c11"><span></span>I know how to update it</label>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="step" id="s12" data-title="If something goes wrong">
+  <div class="sh"><div class="num">12</div><div><h2>If something goes wrong</h2><p class="why">Find what you see in the left column. If nothing matches, copy the last 20 lines of Render's Logs and send them to Claude.</p></div></div>
+  <div class="body">
+    <div class="tablewrap">
+      <table class="trouble">
+        <thead><tr><th>What you see</th><th>Why</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>The page says <code>Not found</code></td><td><code>public/index.html</code> isn't on GitHub, or it's in the wrong place.</td><td>Do step 5. The file must be inside a folder called exactly <code>public</code>.</td></tr>
+          <tr><td>Log says <code>Cannot find module 'ws'</code></td><td>The library wasn't installed.</td><td>Check <code>package.json</code> is uploaded and the Build Command is <code>npm install</code>. Then click <span class="ui">Manual Deploy</span> → <span class="ui">Deploy latest commit</span>.</td></tr>
+          <tr><td>Log says <code>Cannot find module '/opt/render/project/src/server.js'</code></td><td>The files are inside an extra folder on GitHub.</td><td>On Render, open <span class="ui">Settings</span> and set <b>Root Directory</b> to that folder's name, or re-upload so <code>server.js</code> sits at the top of the repo.</td></tr>
+          <tr><td><code>Exited with status 1</code> right after <code>npm start</code></td><td>Start Command is wrong.</td><td>Settings → Start Command must be exactly <code>npm start</code>.</td></tr>
+          <tr><td>Game loads but says <b>Offline – reconnecting…</b></td><td>The server is waking up, or restarting after an update.</td><td>Wait one minute and refresh. If it never connects, check the Logs for errors.</td></tr>
+          <tr><td>No "Online" label at all</td><td>You opened the Claude link or a copy of the file from your computer, not the Render address.</td><td>Open your <code>…onrender.com</code> address.</td></tr>
+          <tr><td>Two tabs don't see each other</td><td>They landed in different rooms (more than 30 players), or one tab is old.</td><td>Refresh both tabs.</td></tr>
+          <tr><td>Your repo isn't in Render's list</td><td>Render doesn't have permission to see it.</td><td>Step 7, bullet 5: <span class="ui">Configure account</span> and pick the repo.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <label class="check"><input type="checkbox" id="c12"><span></span>Everything works</label>
+  </div>
+</section>
+</main>
+</div>
+<footer>Pictures are simplified drawings, not screenshots. Button names were correct when written, but sites change. If a button has moved, look for the same words nearby.</footer>
+
+<script>
+(function(){
+  const steps = [...document.querySelectorAll('section.step')];
+  const toc = document.getElementById('tocList');
+  const KEY = 'ashvale-guide-done';
+  let done = {};
+  try { done = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e) { done = {}; }
+  steps.forEach((s, i) => {
+    const li = document.createElement('li');
+    const a = document.createElement('a'); a.href = '#' + s.id; a.id = 'toc-' + s.id;
+    a.innerHTML = '<span class="n">' + String(i + 1).padStart(2, '0') + '</span><span></span>';
+    a.lastChild.textContent = s.dataset.title;
+    li.appendChild(a); toc.appendChild(li);
+  });
+  function render(){
+    let n = 0;
+    steps.forEach((s, i) => {
+      const box = document.getElementById('c' + (i + 1));
+      const on = !!done[s.id]; if (box) box.checked = on; if (on) n++;
+      document.getElementById('toc-' + s.id).classList.toggle('done', on);
+    });
+    document.getElementById('progText').textContent = n + ' of ' + steps.length + ' steps done';
+    document.getElementById('progBar').style.width = (n / steps.length * 100) + '%';
+  }
+  steps.forEach((s, i) => {
+    const box = document.getElementById('c' + (i + 1)); if (!box) return;
+    box.addEventListener('change', () => {
+      done[s.id] = box.checked;
+      try { localStorage.setItem(KEY, JSON.stringify(done)); } catch(e) {}
+      render();
+    });
+  });
+  render();
+  document.querySelectorAll('button.copy').forEach(b => b.addEventListener('click', () => {
+    const text = b.dataset.copy;
+    const ok = () => { b.textContent = 'Copied'; setTimeout(() => { b.textContent = 'Copy'; }, 1400); };
+    const fallback = () => {
+      const v = b.previousElementSibling; const r = document.createRange(); r.selectNodeContents(v);
+      const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Press Ctrl+C';
+      setTimeout(() => { b.textContent = 'Copy'; }, 2000);
+    };
+    try { navigator.clipboard.writeText(text).then(ok, fallback); } catch(e) { fallback(); }
+  }));
+})();
+</script>
