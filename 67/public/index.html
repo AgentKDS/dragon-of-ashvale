@@ -2945,7 +2945,8 @@ function fadeTo(fn){
 function enterDungeon(){
   fadeTo(() => {
     D.inDungeon = true; D.inHall = false; D.speed = 0; D.yaw = Math.PI/2;
-    D.pos.set(DUN.entry.x, DUN.y + WALK_LIFT*D.scale, DUN.entry.z);
+    // arrive clear of the exit spot, which is further out for a bigger dragon
+    D.pos.set(Math.max(DUN.entry.x, DUN.exitX + 2.2*D.scale + 9), DUN.y + WALK_LIFT*D.scale, DUN.entry.z);
     camPos.set(DUN.camMinX, D.pos.y + 9, D.pos.z);
     banner('The Dungeon of Emberhold');
     if (actx && !muted){ const t = actx.currentTime; tone(t, 110, 55, 1.2, 0.12, 'sawtooth'); }
@@ -2988,7 +2989,8 @@ function updateInterior(dt){
   DUN.glow.material.opacity = DUN.ready ? 0.13 + Math.sin(now*2.5)*0.05 : 0.03;
   DUN.egg.material.emissive.setHex(DUN.ready ? 0xa04a10 : 0x2a1404);
   if (D.inDungeon && D.alive && state === 'play'){
-    if (D.pos.x < DUN.exitX && Math.abs(D.pos.z - DUN.cz) < 5.5) exitDungeon();
+    // the stairway is narrow: a big dragon can't squeeze in, so reaching its mouth is enough (the spot moves out with your size)
+    if (!transit && D.pos.x < DUN.exitX + 2.2*D.scale + 2 && Math.abs(D.pos.z - DUN.cz) < 6 + 2.2*D.scale) exitDungeon();
     else if (DUN.ready){
       // stand on the hoard to claim it a little at a time, while the castle knights pour down the stairs to stop you
       const onIt = Math.hypot(D.pos.x - DUN.treasure.x, D.pos.z - DUN.treasure.z) < DUN.treasureR + 2*D.scale;
