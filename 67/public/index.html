@@ -1983,41 +1983,146 @@ function updateFeathers(dt){
 }
 
 // ---------- audio ----------
-let actx = null, muted = false, windGain = null;
+// Everything is synthesised (no sound files). All sounds go through one mixer: a master volume, a gentle
+// compressor so big moments don't crackle, and a hall-like reverb that the larger sounds send a little into.
+// Only a handful of moments make a sound, and each one has a minimum gap so they never pile up.
+let actx = null, muted = false, windGain = null, master = null, verb = null;
 function initAudio(){
   if (actx) return;
   try {
     actx = new (window.AudioContext || window.webkitAudioContext)();
-    const len = actx.sampleRate*2, buf = actx.createBuffer(1,len,actx.sampleRate), d = buf.getChannelData(0);
+    const sr = actx.sampleRate;
+    // white and brown noise to build with
+    const len = sr*2, buf = actx.createBuffer(1, len, sr), d = buf.getChannelData(0);
     for (let i=0;i<len;i++) d[i] = Math.random()*2-1;
-    const src = actx.createBufferSource(); src.buffer = buf; src.loop = true;
-    const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 500; bp.Q.value = 0.6;
+    const bbuf = actx.createBuffer(1, len, sr), bd = bbuf.getChannelData(0); let last = 0;
+    for (let i=0;i<len;i++){ last = (last + 0.02*(Math.random()*2-1))/1.02; bd[i] = last*3.5; }
+    actx._noise = buf; actx._brown = bbuf;
+    // mixer
+    const comp = actx.createDynamicsCompressor(); comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = 0.004; comp.release.value = 0.2;
+    master = actx.createGain(); master.gain.value = 0.75;
+    master.connect(comp).connect(actx.destination);
+    // reverb: a decaying noise tail, stereo
+    const rl = Math.floor(sr*2.2), ir = actx.createBuffer(2, rl, sr);
+    for (let ch=0; ch<2; ch++){ const c = ir.getChannelData(ch); for (let i=0;i<rl;i++) c[i] = (Math.random()*2-1)*Math.pow(1 - i/rl, 3.2); }
+    const conv = actx.createConvolver(); conv.buffer = ir;
+    verb = actx.createGain(); verb.gain.value = 0.35;
+    verb.connect(conv).connect(master);
+    // wind: brown noise through a slowly wandering band-pass, rises with speed
+    const src = actx.createBufferSource(); src.buffer = bbuf; src.loop = true;
+    const bp = actx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 420; bp.Q.value = 0.8;
+    const lfo = actx.createOscillator(), lfoG = actx.createGain(); lfo.frequency.value = 0.13; lfoG.gain.value = 160; lfo.connect(lfoG).connect(bp.frequency); lfo.start();
     windGain = actx.createGain(); windGain.gain.value = 0;
-    src.connect(bp).connect(windGain).connect(actx.destination); src.start();
-    actx._noise = buf;
+    src.connect(bp).connect(windGain).connect(master); src.start();
   } catch(e){ actx = null; }
 }
-function noiseHit(t, dur, freq, vol){
+const sfxLast = {};
+// true if this sound may play now (and remembers that it did)
+function sfxOk(name, gap){
+  if (!actx || muted) return false;
+  const t = performance.now()/1000;
+  if (t - (sfxLast[name] || -9) < gap) return false;
+  sfxLast[name] = t; return true;
+}
+// building blocks: an envelope, filtered noise, and pitched voices
+function env(g, t, a, peak, dur){ g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); }
+function out(node, wet){ node.connect(master); if (wet) { const s = actx.createGain(); s.gain.value = wet; node.connect(s).connect(verb); } }
+function noiseLayer(t, dur, type, f0, f1, q, peak, a, wet, brown){
+  const s = actx.createBufferSource(); s.buffer = brown ? actx._brown : actx._noise;
+  const f = actx.createBiquadFilter(); f.type = type; f.Q.value = q;
+  f.frequency.setValueAtTime(f0, t); f.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  const g = actx.createGain(); env(g, t, a, peak, dur);
+  s.connect(f).connect(g); out(g, wet);
+  s.start(t, Math.random()*1.5); s.stop(t + dur + 0.05);
+}
+function voice(t, dur, type, f0, f1, peak, a, wet, detune){
+  const o = actx.createOscillator(); o.type = type; if (detune) o.detune.value = detune;
+  o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+  const g = actx.createGain(); env(g, t, a, peak, dur);
+  o.connect(g); out(g, wet); o.start(t); o.stop(t + dur + 0.05);
+  return o;
+}
+// old helpers kept for the few rare one-off sounds (secret door, dungeon, thunder), now routed through the mixer
+function noiseHit(t, dur, freq, vol){ noiseLayer(t, dur, 'lowpass', freq, Math.max(60, freq*0.5), 0.7, vol*0.8, 0.01, 0.25, true); }
+function tone(t, f0, f1, dur, vol, type){ voice(t, dur, type === 'square' ? 'triangle' : (type || 'triangle'), f0, f1, vol*0.7, 0.01, 0.25); }
+
+// fire breath: an airy "whoosh" that swells in and sweeps past, like something flying by fast
+function sfxWhoosh(){
+  if (!sfxOk('fire', 0.11)) return; const t = actx.currentTime, dur = 0.5;
+  // the main rush of air: band-passed noise that rises then falls in pitch, fading in and out smoothly
   const s = actx.createBufferSource(); s.buffer = actx._noise;
-  const f = actx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = freq;
-  const g = actx.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
-  s.connect(f).connect(g).connect(actx.destination); s.start(t, Math.random()); s.stop(t+dur+0.05);
+  const f = actx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 2.2;
+  f.frequency.setValueAtTime(600, t); f.frequency.exponentialRampToValueAtTime(2400, t + dur*0.35); f.frequency.exponentialRampToValueAtTime(700, t + dur);
+  const g = actx.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.7, t + dur*0.3); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(f).connect(g); out(g, 0.2); s.start(t, Math.random()); s.stop(t + dur + 0.05);
+  // a thin airy hiss riding on top
+  noiseLayer(t + 0.03, dur*0.8, 'highpass', 4000, 6000, 0.7, 0.12, dur*0.25, 0.2);
 }
-function tone(t, f0, f1, dur, vol, type){
-  const o = actx.createOscillator(); o.type = type||'square';
-  o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(f1,t+dur);
-  const g = actx.createGain(); g.gain.setValueAtTime(vol,t); g.gain.exponentialRampToValueAtTime(0.001,t+dur);
-  o.connect(g).connect(actx.destination); o.start(t); o.stop(t+dur+0.02);
+// eating: a deep, wet GULP, like swallowing something whole (big things get a bigger, double gulp)
+function gulpAt(t, depth){
+  // the throat: a sharply resonant filter on soft noise, sliding down in pitch, which gives the wet "gluh" sound
+  const s = actx.createBufferSource(); s.buffer = actx._brown;
+  const f = actx.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 9;
+  f.frequency.setValueAtTime(900*depth, t); f.frequency.exponentialRampToValueAtTime(260*depth, t + 0.13);
+  const g = actx.createGain(); env(g, t, 0.012, 1.4, 0.16);
+  s.connect(f).connect(g); out(g, 0.08); s.start(t, Math.random()); s.stop(t + 0.2);
+  // the "-lp" at the end: a quick bubble that pops upward
+  voice(t + 0.1, 0.07, 'sine', 170*depth, 330*depth, 0.3, 0.006);
+  // the weight of it going down
+  voice(t, 0.14, 'sine', 140*depth, 70*depth, 0.35, 0.01);
 }
-function sfxChomp(big){ if (!actx||muted) return; const t = actx.currentTime; tone(t,190,55,0.14,0.18); noiseHit(t,0.09,2200,0.35); if (big) tone(t+0.05,520,880,0.25,0.08,'triangle'); }
-function sfxThud(){ if (!actx||muted) return; const t = actx.currentTime; tone(t,90,35,0.3,0.35,'sine'); noiseHit(t,0.25,600,0.5); }
-function sfxFlap(){ if (!actx||muted) return; noiseHit(actx.currentTime,0.18,900,0.25); }
-function sfxRoar(){ if (!actx||muted) return; const t = actx.currentTime; tone(t,140,55,0.7,0.12,'sawtooth'); noiseHit(t,0.6,700,0.25); }
-function sfxLock(){ if (!actx||muted) return; const t = actx.currentTime; tone(t,880,880,0.07,0.06,'sine'); tone(t+0.09,1320,1320,0.08,0.06,'sine'); }
-function sfxEek(){ if (!actx||muted) return; const t = actx.currentTime; tone(t, 900 + Math.random()*500, 1500 + Math.random()*400, 0.16, 0.035, 'sine'); }
-function sfxPower(){ if (!actx||muted) return; const t = actx.currentTime; tone(t,440,880,0.18,0.08,'triangle'); tone(t+0.12,660,1320,0.25,0.08,'triangle'); }
-function sfxGem(){ if (!actx||muted) return; const t = actx.currentTime; tone(t,1200+Math.random()*300,1800,0.08,0.04,'sine'); }
-function sfxWhoosh(){ if (!actx||muted) return; noiseHit(actx.currentTime,0.45,1800,0.3); }
+function sfxChomp(big){
+  if (!sfxOk('chomp', big ? 0.2 : 0.22)) return; const t = actx.currentTime;
+  if (big){ gulpAt(t, 0.8); gulpAt(t + 0.2, 0.7); }
+  else gulpAt(t, 1);
+}
+// getting hit: a sharp slap-and-crack of impact with a pained drop in pitch
+function sfxThud(){
+  if (!sfxOk('hurt', 0.3)) return; const t = actx.currentTime;
+  noiseLayer(t, 0.12, 'bandpass', 2600, 1200, 1.1, 0.7, 0.001, 0.15);        // the crack of the blow
+  voice(t, 0.2, 'triangle', 420, 140, 0.4, 0.002, 0.1);                       // a stung "oof" that drops in pitch
+  voice(t, 0.16, 'sine', 120, 60, 0.4, 0.003);                                // a short punch of weight
+}
+// a wing beat: a soft heavy "fwump" of air
+function sfxFlap(){
+  if (!sfxOk('flap', 0.3)) return; const t = actx.currentTime;
+  noiseLayer(t, 0.28, 'lowpass', 700, 180, 0.9, 0.45, 0.05, 0, true);
+  noiseLayer(t + 0.02, 0.18, 'bandpass', 1100, 500, 0.8, 0.12, 0.04);
+}
+// a dragon's roar: two detuned growling voices with a rattling throat and breath, in a big space
+function sfxRoar(){
+  if (!sfxOk('roar', 1.2)) return; const t = actx.currentTime, dur = 1.3;
+  const growl = actx.createGain(); growl.gain.value = 0.6;
+  const am = actx.createOscillator(); am.frequency.value = 34; const amG = actx.createGain(); amG.gain.value = 0.4;
+  am.connect(amG).connect(growl.gain); am.start(t); am.stop(t + dur + 0.1);
+  const form = actx.createBiquadFilter(); form.type = 'bandpass'; form.Q.value = 1.4;
+  form.frequency.setValueAtTime(500, t); form.frequency.linearRampToValueAtTime(900, t + 0.35); form.frequency.exponentialRampToValueAtTime(350, t + dur);
+  const g = actx.createGain(); env(g, t, 0.12, 0.9, dur);
+  for (const [f0, dt] of [[120, 0], [123, 12], [61, -8]]){
+    const o = actx.createOscillator(); o.type = 'sawtooth'; o.detune.value = dt;
+    o.frequency.setValueAtTime(f0*0.8, t); o.frequency.linearRampToValueAtTime(f0, t + 0.25); o.frequency.exponentialRampToValueAtTime(f0*0.55, t + dur);
+    o.connect(growl); o.start(t); o.stop(t + dur + 0.1);
+  }
+  growl.connect(form).connect(g); out(g, 0.5);
+  noiseLayer(t, dur, 'bandpass', 1200, 500, 0.8, 0.3, 0.1, 0.4);
+}
+// a power-up or the treasure: a bright rising chime with sparkle
+function sfxPower(){
+  if (!sfxOk('power', 0.5)) return; const t = actx.currentTime;
+  [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => {
+    voice(t + i*0.07, 0.9, 'sine', f, f, 0.22, 0.01, 0.6);
+    voice(t + i*0.07, 0.6, 'triangle', f*2, f*2, 0.05, 0.01, 0.6, 6);
+  });
+  noiseLayer(t + 0.1, 0.6, 'highpass', 7000, 9000, 0.7, 0.06, 0.05, 0.6);
+}
+// the castle gate: a deep grinding rumble with rattling chains
+function sfxGate(){
+  if (!sfxOk('gate', 2)) return; const t = actx.currentTime;
+  noiseLayer(t, 1.6, 'lowpass', 300, 120, 0.8, 0.45, 0.2, 0.3, true);
+  for (let k=0;k<10;k++) noiseLayer(t + k*0.14 + Math.random()*0.05, 0.05, 'bandpass', 3200 + Math.random()*1500, 2800, 4, 0.1, 0.002, 0.2);
+}
+// sounds that used to play constantly are now silent
+function sfxLock(){} function sfxEek(){} function sfxGem(){}
 
 // ---------- game state ----------
 const START_MASS = 5;
@@ -2497,7 +2602,7 @@ function shootFire(owner, target){
   f.life = owner.isPlayer ? 2.2 : 3;
   f.home = owner.isPlayer ? 6 : owner.isBoss ? 1.2 : 2.2;
   f.m.visible = true;
-  if (owner.isPlayer || owner.pos.distanceTo(D.pos) < 250) sfxWhoosh();
+  if (owner.isPlayer) sfxWhoosh();
   // as host, everyone else sees our shared bots' and the Wyrm's fireballs too
   if (net.on && isNpc(owner) && ownsWorld()){
     netSend({t:'fire', o:npcKey(owner), p:f.pos.toArray().map(v => +v.toFixed(2)), v:f.vel.toArray().map(v => +v.toFixed(2)), d:+f.dmg.toFixed(1), z:+f.size.toFixed(2),
@@ -2537,7 +2642,6 @@ function updateFire(dt){
           const facing = (Math.sin(k.yaw)*f.vel.x + Math.cos(k.yaw)*f.vel.z)/(f.vel.length() || 1);
           if (facing < -0.5 && Math.random() < 0.5){
             burst(f.pos, 0xffffff, 0xa9b1bb, 10);
-            if (actx && !muted){ const t = actx.currentTime; tone(t, 900, 700, 0.1, 0.05, 'square'); }
           } else {
             burst(f.pos, 0xff6a1a, 0xffd040, 12);
             k.hp -= f.size > 1.5 ? 2 : 1; k.hitT = now;
@@ -2637,7 +2741,7 @@ function aiThink(e){
   }
   if (threat){ e.mode = 'flee'; e.prey = threat; e.modeT = 4; return; }
   if (prey && hpFrac > 0.45){
-    if (e.mode !== 'hunt' || e.prey !== prey){ e.modeT = 14; if (prey.isPlayer) sfxRoar(); }
+    if (e.mode !== 'hunt' || e.prey !== prey){ e.modeT = 14; }
     e.mode = 'hunt'; e.prey = prey; return;
   }
   // food: crystals first, then healing eagles when hurt, then embers and birds
@@ -2815,7 +2919,7 @@ function spawnBoss(){
   bossLife = BOSS_STAY;
   banner('The Elder Wyrm awakens! Every dragon, attack!');
   feed('<b>The Elder Wyrm</b> has awakened');
-  sfxRoar(); setTimeout(sfxRoar, 450);
+  sfxRoar();
   shake = Math.max(shake, 2.5);
 }
 function bossLeaves(){
@@ -3081,9 +3185,7 @@ function updateCastle(dt){
   const before = gate.open;
   gate.open = clamp(gate.open + clamp(want - gate.open, -dt*0.55, dt*0.55), 0, 1);
   const moving = Math.abs(gate.open - before) > 1e-4;
-  if (moving && !gate.moving && D.pos.distanceTo(gate.pos) < 160 && actx && !muted){
-    const t = actx.currentTime; noiseHit(t, 1.6, 380, 0.25); tone(t, 70, 55, 1.6, 0.12, 'sawtooth');
-  }
+  if (moving && !gate.moving && D.pos.distanceTo(gate.pos) < 160) sfxGate();
   gate.moving = moving;
   if (gate.port) gate.port.position.y = gate.open*22.5;
   const swing = clamp((gate.open - 0.35)/0.65, 0, 1);
@@ -3403,7 +3505,6 @@ function spawnGuard(){
   else k.pos.set(DUN.cx - 30 + Math.random()*20, DUN.y, DUN.cz + (Math.random() < 0.5 ? -12 : 14));
   k.yaw = Math.atan2(D.pos.x - k.pos.x, D.pos.z - k.pos.z);
   burst(tv.set(k.pos.x, DUN.y + 2, k.pos.z), 0x5a534c, 0x8a8174, 8);
-  if (actx && !muted){ const t = actx.currentTime; tone(t, 220, 160, 0.25, 0.05, 'square'); noiseHit(t, 0.2, 2500, 0.08); }
 }
 function killGuard(k, eaten){
   k.alive = false; k.g.visible = false;
@@ -3443,7 +3544,6 @@ function updateGuards(dt){
     if (k.swingT >= 0.22 && k.swingT - dt < 0.22 && d <= reach + 1.4){
       hurt(D, (1 + maxHpFor(D.mass)*(0.006 + DUN.progress*0.006)), null, 'Sword');
       burst(tv.set(k.pos.x + Math.sin(k.yaw)*2, DUN.y + 3, k.pos.z + Math.cos(k.yaw)*2), 0xffffff, 0xffe08a, 6);
-      if (actx && !muted){ const t = actx.currentTime; tone(t, 1800, 1200, 0.08, 0.05, 'triangle'); noiseHit(t, 0.08, 4000, 0.12); }
     }
     k.phase += dt*(spd > 0 ? 14 : 0);
     const sw = spd > 0 ? Math.sin(k.phase)*0.7 : 0;
@@ -3543,7 +3643,7 @@ function updateWalking(dt){
   D.air = (D.air || 0) + D.vyW*dt;
   if (indoors) D.air = Math.min(D.air, Math.max(2, 13 - 4*D.scale));
   if (D.air <= 0){
-    if (D.vyW < -14){ D.landT = now; burst(tv.set(D.pos.x, D.pos.y - 2*D.scale, D.pos.z), 0x9c8559, 0xc9b996, 12); if (actx && !muted){ const t = actx.currentTime; tone(t, 110, 50, 0.18, 0.18, 'sine'); } }
+    if (D.vyW < -14){ D.landT = now; burst(tv.set(D.pos.x, D.pos.y - 2*D.scale, D.pos.z), 0x9c8559, 0xc9b996, 12); }
     D.air = 0; D.vyW = 0;
   }
   D.yaw += turnIn*2.3*dt;
@@ -3577,7 +3677,6 @@ function updateWalking(dt){
     if (swimming) D.pitch *= 1 - Math.min(1, dt*6);
     // a wake of foam trailing behind, and the odd splash
     if (moving && Math.random() < dt*22) burst(tv.set(D.pos.x - fwd.x*4*D.scale + (Math.random()-0.5)*2*D.scale, WATER + 0.3, D.pos.z - fwd.z*4*D.scale + (Math.random()-0.5)*2*D.scale), 0xf2f8ff, 0x9fd0f0, 2);
-    if (moving && Math.random() < dt*0.8 && actx && !muted) noiseHit(actx.currentTime, 0.3, 1600, 0.12);
   }
   const prevStep = Math.sin(walkT);
   walkT += dt*Math.abs(D.speed)*0.32/Math.max(0.6, D.scale);
@@ -3585,7 +3684,6 @@ function updateWalking(dt){
   // footfalls: a soft thump on every step, and puffs of dust when running
   if (moving && !airborne && !swimming && Math.sign(step) !== Math.sign(prevStep)){
     if (running) burst(tv.set(D.pos.x - fwd.x*2*D.scale, D.pos.y - 2.2*D.scale, D.pos.z - fwd.z*2*D.scale), 0x9c8559, 0xc9b996, 4);
-    if (actx && !muted && D.scale > 0.9){ const t = actx.currentTime; tone(t, 70 + Math.random()*10, 40, 0.12, 0.04*Math.min(3, D.scale), 'sine'); }
   }
   // whole-body motion: squash on landing, lean into a run, sway with each stride, tilt with a jump, breathe at rest
   const sinceLand = now - (D.landT === undefined ? -9 : D.landT);
@@ -4229,7 +4327,6 @@ function netHandle(m){
     f.pos.fromArray(m.p); f.vel.fromArray(m.v);
     f.dmg = clamp(+m.d || 8, 1, 200); f.size = clamp(+m.z || 1, 0.3, 4); f.life = 2.2; f.home = 6;
     f.m.material = fireEnemyM; f.m.children[0].material = haloEnemyM; f.m.visible = true;
-    if (e.pos.distanceTo(D.pos) < 250) sfxWhoosh();
     return;
   }
   if (m.t === 'hit'){
