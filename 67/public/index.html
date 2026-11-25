@@ -1598,18 +1598,25 @@ const clouds = [];
 }
 
 // ---------- dragon ----------
+// skins with their own bone colour (Crystal's gold) glow a little, so the gold still shows in shade and from far away
+function goldGlow(m, skin){
+  const on = !!skin.bone;
+  m.hornM.emissive.setHex(on ? skin.horn : 0).multiplyScalar(on ? 0.3 : 0);
+  m.boneM.emissive.setHex(on ? skin.bone : 0).multiplyScalar(on ? 0.3 : 0);
+}
 function buildDragon(pal){
   const dragon = new THREE.Group(); scene.add(dragon);
   const DR = {group:dragon, tOff:0};
   const scaleM = new THREE.MeshLambertMaterial({color:pal.scale, flatShading:true});
   const darkM = new THREE.MeshLambertMaterial({color:pal.dark, flatShading:true});
   const bellyM = new THREE.MeshLambertMaterial({color:pal.belly, flatShading:true});
-  const hornM = new THREE.MeshLambertMaterial({color:0xeadcc0, flatShading:true});
+  const hornM = new THREE.MeshLambertMaterial({color:pal.horn || 0xeadcc0, flatShading:true});
   const eyeM = new THREE.MeshBasicMaterial({color:pal.eye});
   const wingM = new THREE.MeshLambertMaterial({color:pal.wing, side:THREE.DoubleSide, flatShading:true});
   // wing bones and tail tip: the dark colour, unless a skin gives them their own (Crystal's are gold)
   const boneM = new THREE.MeshLambertMaterial({color:pal.bone || pal.dark, flatShading:true});
   DR.mats = {scaleM, darkM, bellyM, eyeM, wingM, hornM, boneM};
+  goldGlow(DR.mats, pal);
   const body = new THREE.Group(); dragon.add(body); DR.body = body;
   const sph = (r,mat,x,y,z,sx=1,sy=1,sz=1,parent=body) => { const m = new THREE.Mesh(new THREE.SphereGeometry(r,12,9),mat); m.position.set(x,y,z); m.scale.set(sx,sy,sz); parent.add(m); return m; };
   sph(1, scaleM, 0,0,0, 1.55,1.35,3.0);
@@ -2483,7 +2490,7 @@ function applySkin(skin){
   const m = DR.mats;
   m.scaleM.color.setHex(skin.scale); m.darkM.color.setHex(skin.dark); m.bellyM.color.setHex(skin.belly);
   m.wingM.color.setHex(skin.wing); m.eyeM.color.setHex(skin.eye); m.hornM.color.setHex(skin.horn);
-  m.boneM.color.setHex(skin.bone || skin.dark);
+  m.boneM.color.setHex(skin.bone || skin.dark); goldGlow(m, skin);
   D.pal = skin;
 }
 let skinId = 'ember';
@@ -2519,7 +2526,7 @@ const skinPreview = (() => {
       const m = R.mats;
       m.scaleM.color.setHex(skin.scale); m.darkM.color.setHex(skin.dark); m.bellyM.color.setHex(skin.belly);
       m.wingM.color.setHex(skin.wing); m.eyeM.color.setHex(skin.eye); m.hornM.color.setHex(skin.horn || 0xeadcc0);
-      m.boneM.color.setHex(skin.bone || skin.dark);
+      m.boneM.color.setHex(skin.bone || skin.dark); goldGlow(m, skin);
       const w = cv.parentElement; w.classList.remove('skinPop'); void w.offsetWidth; w.classList.add('skinPop');
     }
   };
@@ -2898,10 +2905,12 @@ function kill(v, killer){
   if (!v.isPlayer && killer && killer.isRemote && ownsWorld()) netSend({t:'bk', to:killer.netId, m:+v.mass.toFixed(1), n:v.name});
   v.alive = false; v.hp = 0; v.R.group.visible = false;
   // the winner swallows the loser's whole size; a few loose embers scatter for everyone else
+  let gained = 0;
   if (killer && killer.alive && !killer.isBoss){
     const before = killer.mass;
     grow(killer, v.mass);
-    if (killer.isPlayer) popup(`+${Math.round(killer.mass - before)} size`, killer.pos, true);
+    gained = Math.round(killer.mass - before);
+    if (killer.isPlayer) popup(`+${gained} size`, killer.pos, true);
   }
   // like slither.io, a fallen dragon bursts into a big spray of glowing embers for everyone to race for
   const total = Math.max(4, v.mass*0.35), n = clamp(Math.round(total/2), 4, 28);
@@ -2912,7 +2921,7 @@ function kill(v, killer){
   if (v.pos.distanceTo(D.pos) < 500){ shockwave(v.pos, 0xffd060, 16*v.scale + 10, 0.8); shockwave(v.pos, 0xff5020, 9*v.scale + 6, 0.55); }
   if (killer){ killer.kills++; feed(`${killer.isPlayer ? '<b>You</b>' : killer.name} defeated ${v.isPlayer ? '<b>you</b>' : v.name}`); }
   else feed(`${v.isPlayer ? '<b>You</b>' : v.name} crashed`);
-  if (killer && killer.isPlayer){ popup(`${v.name} defeated!`, v.pos, true); sfxRoar(); slowMo(0.45, 0.25); shake = Math.max(shake, 1.4); }
+  if (killer && killer.isPlayer) killMsg(v.name, gained);
   if (lockTarget === v) lockTarget = null;
   for (const d of dragons) if (d.prey === v){ d.prey = null; d.mode = 'roam'; d.modeT = 0; }
   if (v.isPlayer) gameOver(killer ? `${killer.name} defeated you.` : v.lastHow === 'Sword' ? 'The castle knights drove you off the treasure.' : v.lastHow === 'King' ? 'The King defeated you!' : 'You crashed one time too many.');
@@ -3288,6 +3297,11 @@ const BOSS_HP = 10000, BOSS_EVERY = 110, BOSS_STAY = 240;
 let bossTimer = 40, bossLife = 0;
 const bannerEl = $('banner');
 // on-screen messages are switched off; only the dungeon treasure announces itself
+// you defeated someone: a big message across the screen (no slow motion, the game keeps its speed)
+function killMsg(name, gained){
+  banner(`You killed ${name} and got ${gained} size!`, true);
+  sfxRoar(); shake = Math.max(shake, 0.8);
+}
 function banner(text, treasure){
   if (!treasure) return;
   bannerEl.textContent = text;
@@ -4811,7 +4825,7 @@ function netHandle(m){
     if (!D.alive) return;
     const before = D.mass; grow(D, clamp(+m.m || 0, 0, 100000)); D.kills++;
     popup(`+${Math.round(D.mass - before)} size`, D.pos, true);
-    sfxRoar(); slowMo(0.45, 0.25); shake = Math.max(shake, 1.4);
+    killMsg(String(m.n || 'a dragon'), Math.round(D.mass - before));
     return;
   }
   if (m.t === 'br'){
@@ -4871,8 +4885,7 @@ function netHandle(m){
     if (m.killer === net.id && m.victim !== net.id && D.alive){
       const before = D.mass; grow(D, clamp(+m.m || 0, 0, 100000)); D.kills++;
       popup(`+${Math.round(D.mass - before)} size`, D.pos, true);
-      if (v) popup(`${v.name} defeated!`, v.pos, true);
-      sfxRoar(); slowMo(0.45, 0.25); shake = Math.max(shake, 1.4);
+      killMsg(v ? v.name : 'a dragon', Math.round(D.mass - before));
     }
     if (v && v.alive){
       v.alive = false; v.R.group.visible = false;
